@@ -1,4 +1,4 @@
-package lezers5Domain;
+package lezers6Domain;
 /**
  * 1-3-2012
  * @author kooijmanj1

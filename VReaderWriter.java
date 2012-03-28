@@ -31,7 +31,7 @@ public class VReaderWriter {
 		vbuilding.organize();
 		
 		int shellNr = 0;
-		String seqNr = "-7";
+		String seqNr = "-9";
 		String stringShellNr = "Exterior-of-";
 		String geometryCore = readerWriter.geometryName;
 		readerWriter.geometryName = stringShellNr + readerWriter.geometryName;

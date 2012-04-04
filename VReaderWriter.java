@@ -16,8 +16,8 @@ import org.citygml4j.model.citygml.building.Building;
  *
  */
 public class VReaderWriter {
-	private String geometryName = "cubepy2";
-	private String sourceName = "c:/CityGMLData/Testdata1/" + geometryName + ".xml";
+	private String geometryName = "FirstBuildingBOS";
+	private String sourceName = "c:/CityGMLData/British_Ordnance_Survey/" + geometryName + ".xml";
 	private String destinationName;
 	private VInputFile input = new VInputFile(new File(sourceName));
 	private VOutputFile output;
@@ -31,7 +31,7 @@ public class VReaderWriter {
 		vbuilding.organize();
 		
 		int shellNr = 0;
-		String seqNr = "-9";
+		String seqNr = "-1";
 		String stringShellNr = "Exterior-of-";
 		String geometryCore = readerWriter.geometryName;
 		readerWriter.geometryName = stringShellNr + readerWriter.geometryName;
@@ -41,7 +41,7 @@ public class VReaderWriter {
 			readerWriter.output.writeBuilding(str);
 			stringShellNr = "Interior-" + shellNr + "-of-";
 			readerWriter.geometryName = stringShellNr + geometryCore;
-			readerWriter.destinationName = "c:/PolyFiles/" + readerWriter.geometryName + seqNr + ".txt";
+			readerWriter.destinationName = "c:/PolyFilesBOS/" + readerWriter.geometryName + seqNr + ".txt";
 			shellNr++;
 		}
 	}

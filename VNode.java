@@ -6,7 +6,7 @@ package lezers6Domain;
  */
 public class VNode {
 	private double[] node = new double[3];
-	
+	private double snapMargin = 0.001;
 	/**
 	 * construct an instance of VNode with the ordinate values given
 	 * @param o1 x ordinate
@@ -36,9 +36,9 @@ public class VNode {
 	 * @return true if equal, otherwise false
 	 */
 	public boolean equals(VNode node){
-	    if(this.node[0] == node.getOrdinate(0)
-			&& this.node[1] == node.getOrdinate(1)
-			&& this.node[2] == node.getOrdinate(2)){
+	    if(    (this.node[0] > (node.getOrdinate(0) - snapMargin) && this.node[0] <= (node.getOrdinate(0) + snapMargin))
+			&& (this.node[1] > (node.getOrdinate(1) - snapMargin) && this.node[1] <= (node.getOrdinate(1) + snapMargin))
+			&& (this.node[2] > (node.getOrdinate(2) - snapMargin) && this.node[2] <= (node.getOrdinate(2) + snapMargin))  ){
 			return true;}
 		else{
 			return false;

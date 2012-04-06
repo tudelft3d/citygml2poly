@@ -27,16 +27,21 @@ public class VReaderWriter {
 		VReaderWriter readerWriter = new VReaderWriter();	
 		ArrayList<Building> buildingList = readerWriter.input.readAllBuildings();	
 		Building building = buildingList.get(0);
-		VBuilding vbuilding = new VBuilding(building);
-		vbuilding.organize();
+		//VBuilding vbuilding = new VBuilding(building);
+		//vbuilding.organize();
+		VConstruct<Building> construct = new VConstruct<Building>();
+		construct.store(building);
+		construct.organize();
+		
 		
 		int shellNr = 0;
-		String seqNr = "-1";
+		String seqNr = "-2";
 		String stringShellNr = "Exterior-of-";
 		String geometryCore = readerWriter.geometryName;
 		readerWriter.geometryName = stringShellNr + readerWriter.geometryName;
 		readerWriter.destinationName = "c:/PolyFiles/" + readerWriter.geometryName + seqNr + ".txt";
-		for (String str :vbuilding.getShellStrings() ){
+		//for (String str :vbuilding.getShellStrings() ){
+		for (String str :construct.getShellStrings() ){	
 			readerWriter.output = new VOutputFile(new File(readerWriter.destinationName));
 			readerWriter.output.writeBuilding(str);
 			stringShellNr = "Interior-" + shellNr + "-of-";

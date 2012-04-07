@@ -23,12 +23,9 @@ import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
  */
 public class VConstruct<B extends AbstractBuilding> {
 	private B object;
-	private VShell shell;
-	private ArrayList<String> shellStrings = new ArrayList<String>();
+	private VSolid solid;
+	private ArrayList<String> shellStrings;
 	
-//	public VConstruct(B object){
-//		this.object = object;
-//	}
 	
 	public void store(B object){
 		this.object = object;
@@ -36,39 +33,27 @@ public class VConstruct<B extends AbstractBuilding> {
 	
 	public void organize(){
 		if(object.isSetLod1Solid()){
-			organizeSolid(object.getLod1Solid());
+			solid = new VSolid(object.getLod1Solid());
+			solid.organize();
+			shellStrings = solid.getShellStrings();
 		}
 		if(object.isSetLod2Solid()){
-			organizeSolid(object.getLod2Solid());
+			solid = new VSolid(object.getLod2Solid());
+			solid.organize();
+			shellStrings = solid.getShellStrings();
 		}
-	}
-	
-	public void organizeSolid(SolidProperty solidProperty){
-		if (solidProperty.isSetSolid()){                 
-			SolidImpl solidImpl = (SolidImpl)solidProperty.getObject();		
-			SurfaceProperty exteriorSurfaceProperty = solidImpl.getExterior(); //exterior van de solid
-			shell = new VShell();
-			shell.organisizeShell(exteriorSurfaceProperty);
-			shellStrings.add(shell.toString());
-			
-			// now the inner shells
-			List<SurfaceProperty> surfacePropertyList = solidImpl.getInterior();
-			for (SurfaceProperty interiorSurfaceProperty : surfacePropertyList){
-				shell = new VShell();
-				shell.organisizeShell(interiorSurfaceProperty);
-				shellStrings.add(shell.toString());
+		if(object.isSetConsistsOfBuildingPart()){
+			for (BuildingPartProperty buildingPartProperty : object.getConsistsOfBuildingPart()){
+				BuildingPart buildingPart = buildingPartProperty.getBuildingPart();
+				VConstruct<BuildingPart> construct = new VConstruct<BuildingPart>();
+				construct.store(buildingPart);
+				construct.organize();
+				shellStrings.addAll(construct.getShellStrings());
 			}
-		}
-		else{
-			String href = solidProperty.getHref();
-			System.out.println("href: " + href);
-		}
+		}	
 	}
 	
 	public ArrayList<String> getShellStrings(){
 		return shellStrings;
-	}
-	
-	
-	
+	}	
 }

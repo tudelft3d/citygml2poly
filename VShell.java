@@ -11,6 +11,7 @@ import org.citygml4j.model.gml.geometry.primitives.DirectPosition;
 import org.citygml4j.model.gml.geometry.primitives.DirectPositionList;
 import org.citygml4j.model.gml.geometry.primitives.PosOrPointPropertyOrPointRep;
 import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
+import org.citygml4j.util.xlink.XLinkResolver;
 
 /**
  * 7-3-2012
@@ -21,6 +22,7 @@ public class VShell {
 	private ArrayList<VFacet> facets = new ArrayList<VFacet>();
 	private VUnicNodes unicNodes = new VUnicNodes();
 	private VFacet facet;
+	private VBuilding building;//trial
 	
 	public void organisizeShell(SurfaceProperty surfaceProperty){
 		CompositeSurfaceImpl compositeSurfaceImpl = (CompositeSurfaceImpl)surfaceProperty.getObject();
@@ -29,6 +31,11 @@ public class VShell {
 		for (SurfaceProperty surfaceMemberElement : surfaceMember){
 			facet = new VFacet();
 			PolygonImpl polygonImpl = (PolygonImpl)surfaceMemberElement.getSurface();
+			//check on implementation of polygonImpl
+			if (polygonImpl == null){ // trial if
+				String str = surfaceMemberElement.getHref();
+				System.out.println("href: " + str);
+			} // trial if
 			AbstractRingProperty ringPropertyExt = polygonImpl.getExterior(); // exterior of the polygon
 			LinearRingImpl linearRingImpl = (LinearRingImpl)ringPropertyExt.getObject();
 			

@@ -20,11 +20,15 @@ import org.citygml4j.util.xlink.XLinkResolver;
  */
 public class VShell {
 	private ArrayList<VFacet> facets = new ArrayList<VFacet>();
-	private VUnicNodes unicNodes = new VUnicNodes();
+	private VUnicNodes unicNodes;
 	private VFacet facet;
-	private VBuilding building;//trial
+	private VPolygon polygon;
 	
-	public void organisizeShell(SurfaceProperty surfaceProperty){
+	public VShell(VUnicNodes unicNodes){
+		this.unicNodes = unicNodes;
+	}
+	
+	public void organize(SurfaceProperty surfaceProperty){
 		CompositeSurfaceImpl compositeSurfaceImpl = (CompositeSurfaceImpl)surfaceProperty.getObject();
 		List<SurfaceProperty> surfaceMember = compositeSurfaceImpl.getSurfaceMember(); 
 		int facetNr = 0;
@@ -45,12 +49,15 @@ public class VShell {
 			List<PosOrPointPropertyOrPointRep> pppList = null;
 			if(linearRingImpl.isSetPosOrPointPropertyOrPointRep()){
 				pppList = linearRingImpl.getPosOrPointPropertyOrPointRep();
-				makePolygonFromPppList(pppList);
+				polygon = new VPolygon(unicNodes, pppList);
+				facet.addPolygon(polygon);
 			}
+			
 			DirectPositionList posList= null;
 			if(linearRingImpl.isSetPosList()){
 				posList = linearRingImpl.getPosList();
-				makePolygonFromPosList(posList);
+				polygon = new VPolygon(unicNodes, posList);
+				facet.addPolygon(polygon);
 			}
 			
 			List<AbstractRingProperty> listAbstractRingProperty = polygonImpl.getInterior();
@@ -58,83 +65,13 @@ public class VShell {
 				if(ringPropertyInt != null){
 					linearRingImpl = (LinearRingImpl)ringPropertyInt.getObject();
 					pppList = linearRingImpl.getPosOrPointPropertyOrPointRep();
-					makePolygonFromPppList(pppList);
+					polygon = new VPolygon(unicNodes, pppList);
+					facet.addPolygon(polygon);
 					makeHolePoint();
 				}
 			}	
 			facets.add(facet);
 			facetNr++;
-		}
-	}
-	
-	
-	/**
-	 * Case: LinearRing implemented as a PosOrPointPropertyOrPointRep
-	 * Forms nodes, adds them to polygons and to the array of unique nodes: 
-	 * adds polygons to facet
-	 * @param pppList
-	 */
-	private void makePolygonFromPppList(List<PosOrPointPropertyOrPointRep> pppList){
-		VPolygon polygon = new VPolygon();
-		VNode node = new VNode();
-		int nodeNr = 0;
-		for (PosOrPointPropertyOrPointRep pppElement : pppList ){
-			DirectPosition directPosition = pppElement.getPos();
-			List<Double> ordinates = directPosition.getValue();
-			int index = 0;
-			for(Double ordinate : ordinates){
-				node.addOrdinate(index, ordinate);
-				index++;			
-				System.out.println("" + nodeNr + " " + index + " " + ordinate + "  ");
-			}
-			nodeNr++;
-			polygon.addNode(node);
-			unicNodes.addUnicNode(node);
-			node = new VNode();
-		}
-		convertNodesToIndices(polygon);
-		facet.addPolygon(polygon);
-	}
-	
-	/**
-	 * Case: LinearRing implemented as DirectPositionList
-	 * Forms nodes, adds them to polygons and to the array of unique nodes:
-	 * adds polygons to facet
-	 * @param posList
-	 */
-	private void makePolygonFromPosList(DirectPositionList posList){
-		VPolygon polygon = new VPolygon();
-		VNode node = new VNode();
-		int index = 0;
-		int nodeNr = 0;
-		List<Double> ordinates = posList.getValue();
-		for (Double ordinate : ordinates){
-			node.addOrdinate(index, ordinate);
-			index++;
-			System.out.println("" + nodeNr + " " + index + " " + ordinate + "  ");
-			if ( index == 3){
-				index = 0;
-				polygon.addNode(node);
-				unicNodes.addUnicNode(node);
-				node = new VNode();
-			}
-		}
-		convertNodesToIndices(polygon);
-		facet.addPolygon(polygon);
-		nodeNr++;
-	}
-	/**
-	 * 	Derives index values from the facet nodes by comparing coordinates 
-	 *	between facet nodes and nodes in the array of unique nodes
-	 * @param polygon
-	 */
-	private void convertNodesToIndices(VPolygon polygon){
-		for (VNode polygonNode: polygon.getNodes()){
-			for (VNode unicNode: unicNodes.getUnicNodes()){
-				if (polygonNode.equals(unicNode)){
-					polygon.addIndex(unicNodes.getIndex(unicNode));
-				}
-			}
 		}
 	}
 	

@@ -11,25 +11,27 @@ public class VSolid {
 	private SolidProperty solidProperty;
 	private VShell shell;
 	private ArrayList<String> shellStrings = new ArrayList<String>();
+	private VUnicNodes unicNodes;
 	
 	
-	public VSolid(SolidProperty solidProperty){
+	public VSolid(SolidProperty solidProperty, VUnicNodes unicNodes){
 		this.solidProperty = solidProperty;
+		this.unicNodes = unicNodes;
 	}
 	
 	public void organize(){
 		if (solidProperty.isSetSolid()){                 
 			SolidImpl solidImpl = (SolidImpl)solidProperty.getObject();		
 			SurfaceProperty exteriorSurfaceProperty = solidImpl.getExterior(); //exterior van de solid
-			shell = new VShell();
-			shell.organisizeShell(exteriorSurfaceProperty);
+			shell = new VShell(unicNodes);
+			shell.organize(exteriorSurfaceProperty);
 			shellStrings.add(shell.toString());
 			
 			// now the inner shells
 			List<SurfaceProperty> surfacePropertyList = solidImpl.getInterior();
 			for (SurfaceProperty interiorSurfaceProperty : surfacePropertyList){
-				shell = new VShell();
-				shell.organisizeShell(interiorSurfaceProperty);
+				shell = new VShell(unicNodes);
+				shell.organize(interiorSurfaceProperty);
 				shellStrings.add(shell.toString());
 			}
 		}

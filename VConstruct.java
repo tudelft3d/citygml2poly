@@ -25,6 +25,7 @@ public class VConstruct<B extends AbstractBuilding> {
 	private B object;
 	private VSolid solid;
 	private ArrayList<String> shellStrings;
+	private VUnicNodes unicNodes = new VUnicNodes();
 	
 	
 	public void store(B object){
@@ -33,15 +34,19 @@ public class VConstruct<B extends AbstractBuilding> {
 	
 	public void organize(){
 		if(object.isSetLod1Solid()){
-			solid = new VSolid(object.getLod1Solid());
+			solid = new VSolid(object.getLod1Solid(), unicNodes);
 			solid.organize();
 			shellStrings = solid.getShellStrings();
 		}
 		if(object.isSetLod2Solid()){
-			solid = new VSolid(object.getLod2Solid());
+			solid = new VSolid(object.getLod2Solid(), unicNodes);
 			solid.organize();
 			shellStrings = solid.getShellStrings();
 		}
+//		if (object.isSetBoundedBySurface()){
+//			organizeBoundedBySurface(object.getBoundedBySurface());
+//		}
+		
 		if(object.isSetConsistsOfBuildingPart()){
 			for (BuildingPartProperty buildingPartProperty : object.getConsistsOfBuildingPart()){
 				BuildingPart buildingPart = buildingPartProperty.getBuildingPart();

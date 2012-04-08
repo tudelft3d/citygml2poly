@@ -3,9 +3,8 @@ package lezers6Domain;
 import java.util.ArrayList;
 
 /**
- * 13-02-2012
- * Is responsable for list of unique nodes that carry the facets of a 3D shape. Here a separate class 
- * is a bit overdone, I think. It would suffice to have ArrayList<Node> in de klasse Building 
+ * 8-04-2012
+ * Is responsible for list of unique nodes that carry the facets of a 3D shape. 
  * @author kooijmanj1
  *
  */

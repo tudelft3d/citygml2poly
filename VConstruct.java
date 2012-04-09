@@ -24,6 +24,7 @@ import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
 public class VConstruct<B extends AbstractBuilding> {
 	private B object;
 	private VSolid solid;
+	private VBoundedBySurface boundedBySurface;
 	private ArrayList<String> shellStrings;
 	private VUnicNodes unicNodes = new VUnicNodes();
 	
@@ -43,9 +44,13 @@ public class VConstruct<B extends AbstractBuilding> {
 			solid.organize();
 			shellStrings = solid.getShellStrings();
 		}
-//		if (object.isSetBoundedBySurface()){
-//			organizeBoundedBySurface(object.getBoundedBySurface());
-//		}
+		if (object.isSetBoundedBySurface()){
+			System.out.println("Found: BoundedBySurface" );
+			boundedBySurface = new VBoundedBySurface(object.getBoundedBySurface(), unicNodes);
+			boundedBySurface.organize();
+			shellStrings = boundedBySurface.getShellStrings();
+			System.out.println("Finalized: BoundedBySurface");
+		}
 		
 		if(object.isSetConsistsOfBuildingPart()){
 			for (BuildingPartProperty buildingPartProperty : object.getConsistsOfBuildingPart()){

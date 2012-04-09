@@ -16,8 +16,8 @@ import org.citygml4j.model.citygml.building.Building;
  *
  */
 public class VReaderWriter {
-	private String geometryName = "FirstBuildingBOS";
-	private String sourceName = "c:/CityGMLData/British_Ordnance_Survey/" + geometryName + ".xml";
+	private String geometryName = "LOD2_Building_v100";
+	private String sourceName = "c:/CityGMLData/" + geometryName + ".xml";
 	private String destinationName;
 	private VInputFile input = new VInputFile(new File(sourceName));
 	private VOutputFile output;
@@ -35,7 +35,7 @@ public class VReaderWriter {
 		
 		
 		int shellNr = 0;
-		String seqNr = "-1";
+		String seqNr = "-14";
 		String stringShellNr = "Exterior-of-";
 		String geometryCore = readerWriter.geometryName;
 		readerWriter.geometryName = stringShellNr + readerWriter.geometryName;

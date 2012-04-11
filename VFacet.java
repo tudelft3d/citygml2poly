@@ -15,16 +15,17 @@ import java.util.ArrayList;
 public class VFacet {
 
 	private String name; 
+	private String polygonId;
 	// The first polygon is the exterior, the others are interior(holes in poly)
 	private ArrayList<VPolygon> polygons = new ArrayList<VPolygon>(); 
 	// only  the interior rings have holepoint
 	private ArrayList<VNode> holePoints = new ArrayList<VNode>(); // only  the interior rings have holepoint
 	
-	public VFacet(String name){
-		this.name = name;
+	public VFacet(String polygonId){
+		this.polygonId = polygonId;
 	}
 	
-	public VFacet(){}
+	//public VFacet(){}
 	
 	public void addPolygon(VPolygon polygon){
 		polygons.add(polygon);
@@ -37,7 +38,7 @@ public class VFacet {
 	public String toString(){
 		String lineSeparator = System.getProperty ( "line.separator" );
 		String str = "";
-		str = str + polygons.size()+ " " + holePoints.size()+ lineSeparator;
+		str = str + polygons.size()+ " " + holePoints.size()+ " # " + polygonId + lineSeparator;
 		
 		for (VPolygon polygon : polygons){
 			str = str + polygon.toString();
@@ -45,7 +46,7 @@ public class VFacet {
 		int holeNr = 0;
 		for (VNode holePoint : holePoints){
 			str = str + holeNr + " ";
-			str = str + holePoint.toString() + " # hard coded" + lineSeparator;
+			str = str + holePoint.toString() + lineSeparator;
 			holeNr++;
 		}
 		return str;

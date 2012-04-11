@@ -43,8 +43,14 @@ public class VBoundedBySurface{
 			MultiSurface multiSurface = multiSurfaceProperty.getMultiSurface();
 			List<SurfaceProperty> surfaceMember = multiSurface.getSurfaceMember();
 			for (SurfaceProperty surfaceMemberElement : surfaceMember){
-				facet = new VFacet();
+				
+				
 				PolygonImpl polygonImpl = (PolygonImpl)surfaceMemberElement.getSurface();
+				String polygonId = polygonImpl.getId();
+				if (polygonId == null){
+					polygonId = "-1";
+				}
+				facet = new VFacet(polygonId);
 				AbstractRingProperty abstractRingProperty = polygonImpl.getExterior();
 				LinearRingImpl linearRingImpl = (LinearRingImpl)abstractRingProperty.getRing();
 				

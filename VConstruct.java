@@ -21,49 +21,82 @@ import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
  *
  * @param <B>
  */
-public class VConstruct<B extends AbstractBuilding> {
+public class VConstruct<B extends AbstractBuilding>{
 	private B object;
 	private VSolid solid;
 	private VBoundedBySurface boundedBySurface;
 	private ArrayList<String> shellStrings;
+	private VStringStore stringStore;
 	private VUnicNodes unicNodes = new VUnicNodes();
+	private String objectId = "-1";
 	
 	
 	public void store(B object){
 		this.object = object;
 	}
 	
+	public void setShellStrings(ArrayList<String> shellStrings){
+		this.shellStrings = shellStrings;
+	}
+	
+	public void setStringStore(VStringStore stringStore){
+		this.stringStore = stringStore;
+	}
+	
+	public void setUnicNodes(VUnicNodes unicNodes){
+		this.unicNodes = unicNodes;
+	}
+	
 	public void organize(){
 		if(object.isSetLod1Solid()){
-			solid = new VSolid(object.getLod1Solid(), unicNodes);
+			if (object.getId() != null){
+				objectId = object.getId();
+			}
+			solid = new VSolid(objectId, object.getLod1Solid(), unicNodes);
 			solid.organize();
-			shellStrings = solid.getShellStrings();
+			stringStore.store(solid.getShellStrings());
+			System.out.println("isSetLod1Solid");
 		}
 		if(object.isSetLod2Solid()){
-			solid = new VSolid(object.getLod2Solid(), unicNodes);
+			String objectId = object.getId();
+			System.out.println("ObjectId: " + objectId);
+			solid = new VSolid(objectId, object.getLod2Solid(), unicNodes);
 			solid.organize();
-			shellStrings = solid.getShellStrings();
+			stringStore.store(solid.getShellStrings());
+			
+			System.out.println("isSetLod2Solid");
 		}
-		if (object.isSetBoundedBySurface()){
-			System.out.println("Found: BoundedBySurface" );
-			boundedBySurface = new VBoundedBySurface(object.getBoundedBySurface(), unicNodes);
-			boundedBySurface.organize();
-			shellStrings = boundedBySurface.getShellStrings();
-			System.out.println("Finalized: BoundedBySurface");
-		}
+//		if (object.isSetBoundedBySurface()){
+//			System.out.println("Found: BoundedBySurface" );
+//			boundedBySurface = new VBoundedBySurface(object.getBoundedBySurface(), unicNodes);
+//			boundedBySurface.organize();
+//			shellStrings = boundedBySurface.getShellStrings();
+//			stringStore.store(boundedBySurface.getShellStrings());
+//			System.out.println("Finalized: BoundedBySurface");
+//		}
 		
 		if(object.isSetConsistsOfBuildingPart()){
 			for (BuildingPartProperty buildingPartProperty : object.getConsistsOfBuildingPart()){
+				VUnicNodes keepUnicNodes = unicNodes;
+				ArrayList<String> keepShellStrings = shellStrings;
+				VStringStore keepStringStore = stringStore;
 				BuildingPart buildingPart = buildingPartProperty.getBuildingPart();
+				String buildingPartId = buildingPart.getId();
+				System.out.println("BuildingPartId: " + buildingPartId);
 				VConstruct<BuildingPart> construct = new VConstruct<BuildingPart>();
+				System.out.println("Ik ga nu een construct met BuildingPart maken");
 				construct.store(buildingPart);
+				construct.setShellStrings(keepShellStrings);
+				construct.setStringStore(keepStringStore);
+				//construct.setUnicNodes(keepUnicNodes);
 				construct.organize();
-				shellStrings.addAll(construct.getShellStrings());
+				System.out.println("isSetConsistsOfBuildingPart");
+				//shellStrings.addAll(construct.getShellStrings());
 			}
 		}	
 	}
 	
-	public ArrayList<String> getShellStrings(){
-		return shellStrings;
-	}	
+//	public ArrayList<String> getShellStrings(){
+//		return shellStrings;
+//	}	
 }

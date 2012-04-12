@@ -18,8 +18,8 @@ import org.citygml4j.model.citygml.building.Building;
  *
  */
 public class VReaderWriter {
-	private String geometryName = "FirstBuildingBOS";
-	private String sourceName = "c:/CityGMLData/British_Ordnance_Survey/" + geometryName + ".xml";
+	private String geometryName = "13_buildings";
+	private String sourceName = "c:/CityGMLData/DenHaag/" + geometryName + ".xml";
 	private String destinationName;
 	private VInputFile input = new VInputFile(new File(sourceName));
 	private VOutputFile output;
@@ -29,29 +29,23 @@ public class VReaderWriter {
 		VStringStore stringStore = new VStringStore();
 		VReaderWriter readerWriter = new VReaderWriter();	
 		ArrayList<Building> buildingList = readerWriter.input.readAllBuildings();	
-		Building building = buildingList.get(0);
-		String buildingId = building.getId();
-		System.out.println("BuildingId: " + buildingId);
-		VConstruct<Building> construct = new VConstruct<Building>();
-		construct.store(building);
-		construct.setStringStore(stringStore);
-		construct.organize();
-			
 		int shellNr = 1;
-		String seqNr = "3";
-		String stringShellNr = "Shell-0-of-";
-		String geometryCore = readerWriter.geometryName;
-		readerWriter.geometryName = stringShellNr + readerWriter.geometryName;
-		readerWriter.destinationName = "c:/PolyFilesBOS/" + readerWriter.geometryName + seqNr + ".poly";
-		for (String str :stringStore.getShellStrings() ){	
-			System.out.println(readerWriter.destinationName);
-			System.out.println(str);
-			readerWriter.output = new VOutputFile(new File(readerWriter.destinationName));
-			readerWriter.output.writeBuilding(str);
-			stringShellNr = "Shell-" + shellNr + "-of-";
-			readerWriter.geometryName = stringShellNr + geometryCore;
-			readerWriter.destinationName = "c:/PolyFilesBOS/" + readerWriter.geometryName + seqNr + ".poly";
-			shellNr++;
+		readerWriter.destinationName = "c:/PolyFilesDenHaag/" + readerWriter.geometryName + shellNr + ".poly";
+		for (Building building : buildingList){
+			String buildingId = building.getId();
+			System.out.println("BuildingId: " + buildingId);
+			VConstruct<Building> construct = new VConstruct<Building>();
+			construct.store(building);
+			construct.setStringStore(stringStore);
+			construct.organize();
+			for (String str :stringStore.getShellStrings() ){	
+				System.out.println(readerWriter.destinationName);
+				System.out.println(str);
+				readerWriter.output = new VOutputFile(new File(readerWriter.destinationName));
+				readerWriter.output.writeBuilding(str);
+				readerWriter.destinationName = "c:/PolyFilesDenHaag/" + readerWriter.geometryName + "-shell-" + shellNr + ".poly";
+				shellNr++;
+			}
 		}
 	}
 }

@@ -19,18 +19,27 @@ import org.citygml4j.model.citygml.building.Building;
  */
 public class VReaderWriter {
 	private String geometryName = "13_buildings";
-	private String sourceName = "c:/CityGMLData/DenHaag/" + geometryName + ".xml";
 	private String destinationName;
-	private VInputFile input = new VInputFile(new File(sourceName));
+	private VInputFile input;
 	private VOutputFile output;
+	private File sourceFile;
+	private File destinationFolder;
+	private File resultFile;
+	private int shellNr = 0;
+	private int buildingNr = 0;
+	
+	public VReaderWriter(File sourceFile, File destinationFolder){
+		this.sourceFile = sourceFile;
+		this.destinationFolder = destinationFolder;
+	}
 
 
-	public static void main(String[] args) throws Exception{
+	public void organizeConversion() throws Exception{
+		input = new VInputFile(sourceFile);
 		VStringStore stringStore = new VStringStore();
-		VReaderWriter readerWriter = new VReaderWriter();	
-		ArrayList<Building> buildingList = readerWriter.input.readAllBuildings();	
-		int shellNr = 1;
-		readerWriter.destinationName = "c:/PolyFilesDenHaag/" + readerWriter.geometryName + shellNr + ".poly";
+		ArrayList<Building> buildingList = input.readAllBuildings();	
+
+		destinationName = destinationFolder.getPath() + geometryName + "-shell-" + shellNr + ".poly";
 		for (Building building : buildingList){
 			String buildingId = building.getId();
 			System.out.println("BuildingId: " + buildingId);
@@ -39,13 +48,25 @@ public class VReaderWriter {
 			construct.setStringStore(stringStore);
 			construct.organize();
 			for (String str :stringStore.getShellStrings() ){	
-				System.out.println(readerWriter.destinationName);
+				System.out.println(destinationName);
 				System.out.println(str);
-				readerWriter.output = new VOutputFile(new File(readerWriter.destinationName));
-				readerWriter.output.writeBuilding(str);
-				readerWriter.destinationName = "c:/PolyFilesDenHaag/" + readerWriter.geometryName + "-shell-" + shellNr + ".poly";
+				output = new VOutputFile(new File(destinationName));
+				output.writeBuilding(str);
+				destinationName = destinationFolder.getPath() +"/"+ geometryName + "-shell-" + shellNr + ".poly";
 				shellNr++;
 			}
+			buildingNr++;
+			stringStore.clear();
+			System.out.println("Number of buildings: " + buildingNr );
+			System.out.println("Number of shells: " + shellNr);
 		}
+	}
+	
+	public int getNumberOfBuildings(){
+		return buildingNr;
+	}
+	
+	public int getNumberOfShells(){
+		return shellNr;
 	}
 }

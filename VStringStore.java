@@ -17,6 +17,10 @@ public class VStringStore {
 		this.shellStrings.addAll(shellStrings);
 	}
 	
+	public void clear(){
+		shellStrings.clear();
+	}
+	
 	public ArrayList<String> getShellStrings(){
 		return shellStrings;
 	}

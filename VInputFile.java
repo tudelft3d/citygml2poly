@@ -35,7 +35,7 @@ public class VInputFile {
 		this.file = file;
 	}
 	
-	public ArrayList<Building> readAllBuildings() throws VInputOutputException{
+	public ArrayList<Building> readAllBuildings() throws VInputOutputException {
 		ArrayList<Building> buildings = new ArrayList<Building>();
 		CityGMLContext ctx = new CityGMLContext();
 		JAXBBuilder builder;

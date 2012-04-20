@@ -1,4 +1,4 @@
-package lezers6Data;
+package lezers6Domain;
 
 public class VInputOutputException extends Exception{
 	

@@ -14,19 +14,18 @@ import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
 import org.citygml4j.util.xlink.XLinkResolver;
 
 /**
- * 7-3-2012
+ * 14-4-2012
  * Responsible for the organization of a shell ( exterior or interior) into a poly file
  * @author kooijmanj1
  */
 public class VShell {
+	private final String NO_ID_INDICATOR = "-1";
 	private ArrayList<VFacet> facets = new ArrayList<VFacet>();
 	private VUnicNodes unicNodes;
 	private VFacet facet;
 	private VPolygon polygon;
 	private String polygonId;
-	private String objectId;
 	private String solidId;
-	
 	
 	public VShell(String solidId, VUnicNodes unicNodes){
 		this.solidId = solidId;
@@ -49,7 +48,7 @@ public class VShell {
 			else{
 				polygonId = polygonImpl.getId();
 				if (polygonId == null){
-					polygonId = "-1";
+					polygonId = NO_ID_INDICATOR;
 				}
 				System.out.println("polygonId: " + polygonId);
 			}
@@ -90,7 +89,7 @@ public class VShell {
 	/**
 	 * As long as we don't have a proper algorithm to calculate, we just give a fixed coordinate.
 	 */
-	private void makeHolePoint(){ // fake as long as we don't know how to calculate
+	private void makeHolePoint(){ 
 		VNode holePoint = new VNode(0.5, 0.5, 0.5);
 		facet.addHolePoint(holePoint);
 	}
@@ -98,24 +97,18 @@ public class VShell {
 	public String toString(){
 		String lineSeparator = System.getProperty ( "line.separator" );
 		String str = "# " + solidId + lineSeparator;
-		//str = str + "# node count, dim, attribute count, boundary marker (0|1) " + lineSeparator;
 		str = str + unicNodes.getSize() + "  " + "3" + " " + "0" + " " + "0" + lineSeparator;
-		//str = str + "# Node index, node coordinates " + lineSeparator;
+		//# Node index, node ordinates
 		int i = 0;
 		for (VNode node : unicNodes.getUnicNodes()){
 			str = str + i + "  " + node.toString() + lineSeparator;
 			i++;
 		}
-		//str = str + lineSeparator;
-		//str = str + "# Part 2 - facet list" + lineSeparator;
-		//str = str + "# facet count, boundary marker (0|1)" + lineSeparator;
-		str = str + facets.size() + " 0" + lineSeparator;// boundary marker mendatory
-		//str = str + "# facets " + lineSeparator;
-		//str = str + "# polygon count, hole count, [boundary marker (0|1)] " + lineSeparator;
+		//# Part 2 - facet list
+		str = str + facets.size() + " 0" + lineSeparator;
 		for (VFacet facet : facets){
-			str = str + facet.toString();// spaties en lineSeparator verwijderd		
+			str = str + facet.toString();	
 		}
-		//str = str +lineSeparator;
 		str = str + "0" + lineSeparator;
 		str = str + "0" + lineSeparator;
 	return str;

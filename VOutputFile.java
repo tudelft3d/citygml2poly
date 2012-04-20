@@ -1,9 +1,10 @@
-package lezers6Data;
+package lezers6Domain;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+
 
 /**
  * 18-02-2012

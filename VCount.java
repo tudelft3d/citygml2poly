@@ -8,8 +8,6 @@ import org.citygml4j.model.citygml.building.Building;
 import org.citygml4j.model.citygml.building.BuildingPart;
 import org.citygml4j.model.citygml.building.BuildingPartProperty;
 
-import lezers2Data.VInputOutputException;
-import lezers4Data.VInputFile;
 
 /**
  * Responsible count of buildings, buildingparts, solids, faces, polygons

@@ -7,19 +7,23 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
-import javax.swing.filechooser.FileFilter;
 
+/**
+ * Responsible for the selection tools for input file and output files. 
+ * Gives some statistics of numbers off buildings and building parts. 
+ * 14-04-2012
+ * @author Jan Kooijman
+ *
+ */
 
 public class VFrame extends JFrame{
-	private JButton defaultButton;
+	private static final long serialVersionUID = 1L;
 	private JButton chooseSourceButton;
 	private JButton chooseDestinationButton;
 	private JButton inventoryButton;
@@ -29,7 +33,6 @@ public class VFrame extends JFrame{
 	private JLabel chosenDestinationLabel;
 	private JLabel inventoryLabel;
 	private JLabel polyCountLabel;
-	private JProgressBar progressBar;
 	private JTextField chosenSourceField;
 	private JTextField chosenDestinationField;
 	private JTextField buildingCountField;
@@ -39,7 +42,7 @@ public class VFrame extends JFrame{
 	private JFileChooser destinationChooser;
 	private File sourceFile;
 	private File destinationFolder;
-	private String sourceFolder = "c://CityGMLData/DenHaag/";
+	private String sourceFolder = "c://CityGMLData/";
 	private final int VERTOFF = 40;
 	
 	public VFrame(){
@@ -78,8 +81,7 @@ public class VFrame extends JFrame{
 		chooseDestinationButton = new JButton("Choose destination ...");
 		chooseDestinationButton.setBounds(10,120 + VERTOFF,200,30);
 		chooseDestinationButton.addActionListener(new ChooseDestinationListener());
-		chooseDestinationButton.setToolTipText("Gives chooser screen to select directory for poly files; " +
-				"requires one file in directory upfront that should be selected!!!");
+		chooseDestinationButton.setToolTipText("Gives chooser screen to select directory for poly files");
 		panel.add(chooseDestinationButton);
 		
 		chosenDestinationLabel = new JLabel("Selected destination folder: ");
@@ -132,7 +134,6 @@ public class VFrame extends JFrame{
 	}
 	
 	private void chooseSource(){
-
 		sourceChooser = new JFileChooser(sourceFolder);
 		int chosen = sourceChooser.showOpenDialog(this);
 		if ( chosen == JFileChooser.APPROVE_OPTION){
@@ -144,7 +145,7 @@ public class VFrame extends JFrame{
 	}
 	
 	private void chooseDestination(){
-		destinationChooser = new JFileChooser("c://PolyFiles");
+		destinationChooser = new JFileChooser("c://PolyFiles/");
 		destinationChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int chosen = destinationChooser.showOpenDialog(this);
 		if (chosen == JFileChooser.APPROVE_OPTION){

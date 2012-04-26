@@ -4,8 +4,6 @@ package lezers6Domain;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -24,6 +22,10 @@ import javax.swing.JLabel;
 
 public class VFrame extends JFrame{
 	private static final long serialVersionUID = 1L;
+	private ChooseSourceListener chooseSourceListener = new ChooseSourceListener(this);
+	private ChooseDestinationListener chooseDestinationListener = new ChooseDestinationListener(this);
+	private StartInventoryListener startInventoryListener = new StartInventoryListener(this);
+	private StartConversionListener startConversionListener = new StartConversionListener(this);
 	private JButton chooseSourceButton;
 	private JButton chooseDestinationButton;
 	private JButton inventoryButton;
@@ -63,7 +65,7 @@ public class VFrame extends JFrame{
 		
 		chooseSourceButton = new JButton("Select source file...");
 		chooseSourceButton.setBounds(10,20 + VERTOFF,200,30);
-		chooseSourceButton.addActionListener(new ChooseSourceListener());
+		chooseSourceButton.addActionListener(chooseSourceListener);
 		chooseSourceButton.setToolTipText("Gives chooser screen to select file to be converted");
 		panel.add(chooseSourceButton);
 		
@@ -80,7 +82,7 @@ public class VFrame extends JFrame{
 		
 		chooseDestinationButton = new JButton("Choose destination ...");
 		chooseDestinationButton.setBounds(10,120 + VERTOFF,200,30);
-		chooseDestinationButton.addActionListener(new ChooseDestinationListener());
+		chooseDestinationButton.addActionListener(chooseDestinationListener);
 		chooseDestinationButton.setToolTipText("Gives chooser screen to select directory for poly files");
 		panel.add(chooseDestinationButton);
 		
@@ -98,7 +100,7 @@ public class VFrame extends JFrame{
 		inventoryButton = new JButton("Start inventory");
 		inventoryButton.setBounds(10,220 + VERTOFF,200,30);
 		inventoryButton.setToolTipText("Gives the number of buildings and building parts");
-		inventoryButton.addActionListener(new StartInventoryListener());
+		inventoryButton.addActionListener(startInventoryListener);
 		panel.add(inventoryButton);
 		
 		inventoryLabel = new JLabel("Number of buildings / buildingParts:");
@@ -115,7 +117,7 @@ public class VFrame extends JFrame{
 		convertButton = new JButton("Start conversion");
 		convertButton.setBounds(10,320 + VERTOFF ,200,30);
 		convertButton.setToolTipText("Starts conversion from CityGML to poly files");
-		convertButton.addActionListener(new StartConversionListener());
+		convertButton.addActionListener(startConversionListener);
 		panel.add(convertButton);
 		
 		polyCountLabel = new JLabel("Resulting number of poly files:");
@@ -133,7 +135,7 @@ public class VFrame extends JFrame{
 		
 	}
 	
-	private void chooseSource(){
+	public void chooseSource(){
 		sourceChooser = new JFileChooser(sourceFolder);
 		int chosen = sourceChooser.showOpenDialog(this);
 		if ( chosen == JFileChooser.APPROVE_OPTION){
@@ -144,7 +146,7 @@ public class VFrame extends JFrame{
 		}
 	}
 	
-	private void chooseDestination(){
+	public void chooseDestination(){
 		destinationChooser = new JFileChooser("c://PolyFiles/");
 		destinationChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int chosen = destinationChooser.showOpenDialog(this);
@@ -156,7 +158,7 @@ public class VFrame extends JFrame{
 		}
 	}
 	
-	private void startInventory(){
+	public void startInventory(){
 		if (!chosenSourceField.getText().isEmpty()){
 			buildingCountField.setText("");// no effect yet
 			disableButtons();
@@ -173,7 +175,7 @@ public class VFrame extends JFrame{
 		}
 	}
 	
-	private void startConversion(){
+	public void startConversion(){
 		
 		if(!(chosenDestinationField.getText().isEmpty() 
 				|| chosenSourceField.getText().isEmpty())){
@@ -219,27 +221,27 @@ public class VFrame extends JFrame{
 		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
-	private class ChooseSourceListener implements ActionListener{
-		public void actionPerformed(ActionEvent e){
-			chooseSource();
-		}
-	}
+//	private class ChooseSourceListener implements ActionListener{
+//		public void actionPerformed(ActionEvent e){
+//			chooseSource();
+//		}
+//	}
 	
-	private class ChooseDestinationListener implements ActionListener{
-		public void actionPerformed(ActionEvent e){
-			chooseDestination();
-		}
-	}
+//	private class ChooseDestinationListener implements ActionListener{
+//		public void actionPerformed(ActionEvent e){
+//			chooseDestination();
+//		}
+//	}
 	
-	private class StartInventoryListener implements ActionListener{
-		public void actionPerformed(ActionEvent e){
-			startInventory();
-		}
-	}
+//	private class StartInventoryListener implements ActionListener{
+//		public void actionPerformed(ActionEvent e){
+//			startInventory();
+//		}
+//	}
 	
-	private class StartConversionListener implements ActionListener{
-		public void actionPerformed(ActionEvent e){
-			startConversion();
-		}
-	}
+//	private class StartConversionListener implements ActionListener{
+//		public void actionPerformed(ActionEvent e){
+//			startConversion();
+//		}
+//	}
 }

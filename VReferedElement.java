@@ -52,12 +52,12 @@ public class VReferedElement {
 				PolygonImpl polygonImpl = (PolygonImpl)surfaceMemberElement.getSurface();
 				if((polygonImpl.getId()).equals(polygonId)){
 					this.polygonImpl = polygonImpl;
-					System.out.println(polygonImpl.toString());
+					// System.out.println(polygonImpl.toString());
 					i++;
 				}
 			}
-			System.out.println("Zo vaak een id gelezen: " + i);
-			System.out.println("klaar");
+			// System.out.println("Zo vaak een id gelezen: " + i);
+      // System.out.println("klaar");
 		}
 	}
 	

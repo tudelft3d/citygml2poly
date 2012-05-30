@@ -39,7 +39,7 @@ public class VPolygon {
 			for(Double ordinate : ordinates){
 				node.addOrdinate(index, ordinate);
 				index++;			
-				System.out.println("" + nodeNr + " " + index + " " + ordinate + "  ");
+				// System.out.println("" + nodeNr + " " + index + " " + ordinate + "  ");
 			}
 			nodeNr++;
 			this.addNode(node);
@@ -64,7 +64,7 @@ public class VPolygon {
 		for (Double ordinate : ordinates){
 			node.addOrdinate(index, ordinate);
 			index++;
-			System.out.println("" + nodeNr + " " + index + " " + ordinate + "  ");
+			// System.out.println("" + nodeNr + " " + index + " " + ordinate + "  ");
 			if ( index == 3){
 				index = 0;
 				this.addNode(node);

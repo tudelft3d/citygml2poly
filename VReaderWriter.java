@@ -35,13 +35,13 @@ public class VReaderWriter {
 		ArrayList<Building> buildingList = input.readAllBuildings();	
 		for (Building building : buildingList){
 			String buildingId = building.getId();
-			System.out.println("BuildingId: " + buildingId);
+      // System.out.println("BuildingId: " + buildingId);
 			VConstruct<Building> construct = new VConstruct<Building>();
 			construct.store(building);
 			construct.setStringStore(stringStore);
 			construct.organize();
 			for (String str :stringStore.getShellStrings() ){	
-				System.out.println("Raw string begin" + str + " Raw string end");
+        // System.out.println("Raw string begin" + str + " Raw string end");
 				// find position of INTERIOR_ or EXTERIOR_INDICATOR
 				int endIndex = str.indexOf("EX");
 				String where = ".0";
@@ -60,8 +60,8 @@ public class VReaderWriter {
 				String beginStr = str.substring(0, endIndex);
 				String endStr = str.substring(endIndex + 2);
 				str = beginStr + endStr;
-				System.out.println(destinationName);
-				System.out.println(str);
+        // System.out.println(destinationName);
+        // System.out.println(str);
 				output = new VOutputFile(new File(destinationName));
 				output.writeBuilding(str);
 				//
@@ -69,8 +69,8 @@ public class VReaderWriter {
 			}
 			buildingNr++;
 			stringStore.clear();
-			System.out.println("Number of buildings: " + (buildingNr-1) );
-			System.out.println("Number of shells: " + (shellNr-1));
+      // System.out.println("Number of buildings written to disk: " + (buildingNr-1) );
+      // System.out.println("Number of shells: " + (shellNr-1));
 		}
 	}
 	

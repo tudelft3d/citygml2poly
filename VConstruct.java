@@ -55,16 +55,16 @@ public class VConstruct<B extends AbstractBuilding>{
 			solid = new VSolid(objectId, object.getLod1Solid(), unicNodes);
 			solid.organize();
 			stringStore.store(solid.getShellStrings());
-			System.out.println("isSetLod1Solid");
+			// System.out.println("isSetLod1Solid");
 		}
 		if(object.isSetLod2Solid()){
 			String objectId = object.getId();
-			System.out.println("ObjectId: " + objectId);
+			// System.out.println("ObjectId: " + objectId);
 			solid = new VSolid(objectId, object.getLod2Solid(), unicNodes);
 			solid.organize();
 			stringStore.store(solid.getShellStrings());
 			
-			System.out.println("isSetLod2Solid");
+      // System.out.println("isSetLod2Solid");
 		}
 //		if (object.isSetBoundedBySurface()){
 //			System.out.println("Found: BoundedBySurface" );
@@ -82,15 +82,15 @@ public class VConstruct<B extends AbstractBuilding>{
 				VStringStore keepStringStore = stringStore;
 				BuildingPart buildingPart = buildingPartProperty.getBuildingPart();
 				String buildingPartId = buildingPart.getId();
-				System.out.println("BuildingPartId: " + buildingPartId);
+				// System.out.println("BuildingPartId: " + buildingPartId);
 				VConstruct<BuildingPart> construct = new VConstruct<BuildingPart>();
-				System.out.println("Ik ga nu een construct met BuildingPart maken");
+				// System.out.println("Ik ga nu een construct met BuildingPart maken");
 				construct.store(buildingPart);
 				construct.setShellStrings(keepShellStrings);
 				construct.setStringStore(keepStringStore);
 				//construct.setUnicNodes(keepUnicNodes);
 				construct.organize();
-				System.out.println("isSetConsistsOfBuildingPart");
+				// System.out.println("isSetConsistsOfBuildingPart");
 				//shellStrings.addAll(construct.getShellStrings());
 			}
 		}	

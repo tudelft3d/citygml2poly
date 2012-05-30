@@ -40,7 +40,7 @@ public class VShell {
 			PolygonImpl polygonImpl = (PolygonImpl)surfaceMemberElement.getSurface();
 			if (polygonImpl == null){ 
 				polygonId  = (surfaceMemberElement.getHref()).substring(1);
-				System.out.println("Refered polygonId: " + polygonId);
+				// System.out.println("Refered polygonId: " + polygonId);
 				VReferedElement element = new VReferedElement(surfaceMemberElement);
 				element.search(polygonId);
 				polygonImpl = element.getPolygonImpl();
@@ -50,7 +50,7 @@ public class VShell {
 				if (polygonId == null){
 					polygonId = NO_ID_INDICATOR;
 				}
-				System.out.println("polygonId: " + polygonId);
+				// System.out.println("polygonId: " + polygonId);
 			}
 			facet = new VFacet(polygonId);
 			

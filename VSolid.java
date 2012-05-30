@@ -55,7 +55,7 @@ public class VSolid{
 		}
 		else{
 			String href = solidProperty.getHref();
-			System.out.println("href: " + href);
+			// System.out.println("href: " + href);
 		}
 	}
 	

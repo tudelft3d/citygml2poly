@@ -35,10 +35,22 @@ def main():
 
 # 3. validate each building/shell
   os.chdir('tmp')
-  print len(glob.glob('*.poly'))
+  # print len(glob.glob('*.poly'))
   lsFiles =[]
   for f in os.listdir('.'):
     lsFiles.append(f)
+  print len(lsFiles)
+  val3dity = '/Users/hugo/Library/Developer/Xcode/DerivedData/val3dity-btcvseqwbnkwbueknlulczqmjyqt/Build/Products/Debug/val3dity'
+
+  i = 0
+  for f in lsFiles:
+    strr = val3dity + " " + f
+    print strr
+    os.system(val3dity + " -withids -xml " + f)
+    i += 1
+    if i == 3:
+      sys.exit()
+
 
 if __name__ == '__main__':
   main()

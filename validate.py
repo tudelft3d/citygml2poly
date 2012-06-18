@@ -9,7 +9,8 @@ import shutil
 import glob
 
 # INFILE = '/Users/hugo/data/citygml/CityGML_British_Ordnance_Survey_v1.0.0.xml'
-INFILE = '/Users/hugo/Dropbox/data/citygml/os_2buildings.xml'
+# INFILE = '/Users/hugo/Dropbox/data/citygml/os_2buildings.xml'
+INFILE = '/Users/hugo/Dropbox/data/citygml/DenHaag11Building1.xml'
 
 def main():
 
@@ -71,8 +72,8 @@ def main():
 
     
 # 4. wipe the tmp folder
-  os.chdir('../')
-  shutil.rmtree('tmp')
+  # os.chdir('../')
+  # shutil.rmtree('tmp')
 
 
 if __name__ == '__main__':

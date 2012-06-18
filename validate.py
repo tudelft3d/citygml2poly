@@ -12,6 +12,31 @@ import glob
 # INFILE = '/Users/hugo/Dropbox/data/citygml/os_2buildings.xml'
 INFILE = '/Users/hugo/Dropbox/data/citygml/DenHaag11Building1.xml'
 
+dErrors = {
+          100: 'DUPLICATE_POINTS',
+          110: 'RING_NOT_CLOSED',
+          200: 'INNER_RING_WRONG_ORIENTATION',
+          210: 'NON_PLANAR_SURFACE',
+          220: 'SURFACE_PROJECTION_INVALID',
+          221: 'INNER_RING_INTERSECTS_OUTER',
+          222: 'INNER_RING_OUTSIDE_OUTER',
+          223: 'INNER_OUTER_RINGS_INTERSECT',
+          224: 'INTERIOR_OF_RING_NOT_CONNECTED',
+          300: 'NOT_VALID_2_MANIFOLD',
+          301: 'SURFACE_NOT_CLOSED',
+          302: 'DANGLING_FACES',
+          303: 'FACE_ORIENTATION_INCORRECT_EDGE_USAGE',
+          304: 'FREE_FACES',
+          305: 'SURFACE_SELF_INTERSECTS',
+          306: 'VERTICES_NOT_USED',
+          310: 'SURFACE_NORMALS_BAD_ORIENTATION',
+          400: 'SHELLS_FACE_ADJACENT',
+          410: 'SHELL_INTERIOR_INTERSECT',
+          420: 'INNER_SHELL_OUTSIDE_OUTER',
+          430: 'INTERIOR_OF_SHELL_NOT_CONNECTED',
+          }
+
+
 def main():
 
 # 1. create and/or clear the tmp folder
@@ -72,8 +97,8 @@ def main():
 
     
 # 4. wipe the tmp folder
-  # os.chdir('../')
-  # shutil.rmtree('tmp')
+  os.chdir('../')
+  shutil.rmtree('tmp')
 
 
 if __name__ == '__main__':

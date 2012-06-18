@@ -41,7 +41,7 @@ public class VReaderWriter {
 			construct.setStringStore(stringStore);
 			construct.organize();
 			for (String str :stringStore.getShellStrings() ){	
-        // System.out.println("Raw string begin" + str + " Raw string end");
+        // System.out.println("Raw string begin\n" + str + "\n Raw string end");
 				// find position of INTERIOR_ or EXTERIOR_INDICATOR
 				int endIndex = str.indexOf("EX");
 				String where = ".0";
@@ -50,11 +50,10 @@ public class VReaderWriter {
 					where = ".1";
 				}
 				
-				
 				// split of  part of str for file name
 				String helpStr = str.substring(2,endIndex);//+2 verwijderd
-				destinationName = destinationFolder.getPath() +"/"+ "shell-" + shellNr + "_" + helpStr + where + ".poly";
-				
+        // destinationName = destinationFolder.getPath() +"/"+ "shell-" + shellNr + "_" + helpStr + where + ".poly";
+        destinationName = destinationFolder.getPath() +"/"+ helpStr + where + ".poly";
 				
 				//Take away INTERIOR_ or EXTERIOR_INDICATOR from ID
 				String beginStr = str.substring(0, endIndex);

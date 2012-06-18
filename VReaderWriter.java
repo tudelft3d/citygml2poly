@@ -41,7 +41,7 @@ public class VReaderWriter {
 			construct.setStringStore(stringStore);
 			construct.organize();
 			for (String str :stringStore.getShellStrings() ){	
-        // System.out.println("Raw string begin\n" + str + "\n Raw string end");
+        System.out.println("Raw string begin\n" + str + "\n Raw string end");
 				// find position of INTERIOR_ or EXTERIOR_INDICATOR
 				int endIndex = str.indexOf("EX");
 				String where = ".0";

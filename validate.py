@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-
+import Tkinter, Tkconstants, tkFileDialog
 import sys
 import os
 import subprocess
@@ -10,7 +10,7 @@ import glob
 
 # INFILE = '/Users/hugo/data/citygml/CityGML_British_Ordnance_Survey_v1.0.0.xml'
 # INFILE = '/Users/hugo/Dropbox/data/citygml/os_2buildings.xml'
-INFILE = '/Users/hugo/Dropbox/data/citygml/DenHaag11Building1.xml'
+# INFILE = '/Users/hugo/Dropbox/data/citygml/DenHaag11Building1.xml'
 
 dErrors = {
           100: 'DUPLICATE_POINTS',
@@ -36,9 +36,35 @@ dErrors = {
           430: 'INTERIOR_OF_SHELL_NOT_CONNECTED',
           }
 
+class TkFileDialogExample(Tkinter.Frame):
+  def __init__(self, root):
+    Tkinter.Frame.__init__(self, root)#, width=200, height=100)
+    # options for buttons
+    button_opt = {'fill': Tkconstants.BOTH, 'padx': 5, 'pady': 5}
+    # define buttons
+    Tkinter.Button(self, text='Open', command=self.askopenfilename).pack(**button_opt)
+    # define options for opening or saving a file
+    self.file_opt = options = {}
+    # options['defaultextension'] = '' # couldn't figure out how this works
+    options['filetypes'] = [('all files', '.*'),('XML files', '.xml'),('GML files', '.gml')]
+    options['initialdir'] = 'C:\\'
+    # options['initialfile'] = 'myfile.txt'
+    options['parent'] = root
+    options['title'] = 'Open...'
+    # defining options for opening a directory
+    self.dir_opt = options = {}
+    options['initialdir'] = 'C:\\'
+    options['mustexist'] = False
+    options['parent'] = root
+    options['title'] = 'This is a title'
+  def askopenfilename(self):
+    filename = tkFileDialog.askopenfilename(**self.file_opt)
+    dothework(filename)
 
-def main():
 
+def dothework(filename):
+  # print os.getcwd()
+  # print filename
 # 1. create and/or clear the tmp folder
   if not os.path.exists("tmp"):
     os.mkdir("tmp")
@@ -47,9 +73,9 @@ def main():
     os.mkdir("tmp")
 
 # 2. create and/or clear the tmp folder
-  print "Processing file:", INFILE
+  print "Processing file:", filename
   print "Parsing the file..."
-  cmd = "./run.sh " + INFILE + " tmp"
+  cmd = "./run.sh " + filename + " tmp"
   subprocess.call(cmd, shell=True)
   print "Done"
   # print "Number of solids in file:", len(glob.glob('tmp/*.poly'))
@@ -85,7 +111,7 @@ def main():
 
   totalxml = []
   totalxml.append('<ValidatorContext>')
-  totalxml.append('\t<inputFile>' + INFILE + '</inputFile>')
+  totalxml.append('\t<inputFile>' + filename + '</inputFile>')
   totalxml.append("\n".join(xmlsolids))
   totalxml.append('</ValidatorContext>')
   
@@ -95,12 +121,14 @@ def main():
   fout.write('\n'.join(totalxml))
   fout.close()
 
-    
 # 4. wipe the tmp folder
   os.chdir('../')
   shutil.rmtree('tmp')
 
 
 if __name__ == '__main__':
-  main()
-
+  root = Tkinter.Tk()
+  root.wm_title("val3dity -- validation of 3D solids")
+  root.geometry('400x100')
+  TkFileDialogExample(root).pack()#, width=200, height=100).pack()
+  root.mainloop()

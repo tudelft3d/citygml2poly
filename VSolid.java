@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.citygml4j.impl.gml.geometry.primitives.SolidImpl;
+import org.citygml4j.impl.gml.geometry.primitives.SurfacePropertyImpl;
 import org.citygml4j.model.gml.geometry.primitives.SolidProperty;
 import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
 	/**
@@ -13,8 +14,7 @@ import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
 	 * Jan Kooijman
 	 */
 public class VSolid{
-	private final String EXTERIOR_INDICATOR = "EX";
-	private final String INTERIOR_INDICATOR = "IN";
+
 	private String NO_ID_INDICATOR = "-1";
 	private SolidProperty solidProperty;
 	private VShell shell;
@@ -31,31 +31,35 @@ public class VSolid{
 	
 	public void organize(){
 		if (solidProperty.isSetSolid()){    
-			SolidImpl solidImpl = (SolidImpl)solidProperty.getObject();		
+			SolidImpl solidImpl = (SolidImpl)solidProperty.getObject();	
 			String solidGmlId = solidImpl.getId();
 			if (solidGmlId == null){
 				solidGmlId = NO_ID_INDICATOR;
 			}
+			
 			//exterior shell
 			SurfaceProperty exteriorSurfaceProperty = solidImpl.getExterior(); 
-			String solidId = solidGmlId + EXTERIOR_INDICATOR;
-			shell = new VShell(solidId, unicNodes);
+			String solidId = solidGmlId + ".0";//EXTERIOR_INDICATOR
+			shellStrings.add(solidId); // first element of shellStrings is solidId for the file name
+			shell = new VShell(unicNodes);
 			shell.organize(exteriorSurfaceProperty);
 			shellStrings.add(shell.toString());
 			
 			
 			// now the inner shells
+			int shellNr = 1;
 			List<SurfaceProperty> surfacePropertyList = solidImpl.getInterior();
 			for (SurfaceProperty interiorSurfaceProperty : surfacePropertyList){
-				solidId = solidGmlId + INTERIOR_INDICATOR;
-				shell = new VShell(solidId, unicNodes);
+				solidId = solidGmlId + "." + shellNr;
+				shellStrings.add(solidId);
+				shell = new VShell(unicNodes);
 				shell.organize(interiorSurfaceProperty);
 				shellStrings.add(shell.toString());
+				shellNr++;
 			}
 		}
 		else{
 			String href = solidProperty.getHref();
-			// System.out.println("href: " + href);
 		}
 	}
 	

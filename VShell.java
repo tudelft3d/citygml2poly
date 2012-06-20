@@ -25,15 +25,18 @@ public class VShell {
 	private VFacet facet;
 	private VPolygon polygon;
 	private String polygonId;
-	private String solidId;
+	private String compositeSurfaceGmlId;
 	
-	public VShell(String solidId, VUnicNodes unicNodes){
-		this.solidId = solidId;
+	public VShell(VUnicNodes unicNodes){
 		this.unicNodes = unicNodes;
 	}
 	
 	public void organize(SurfaceProperty surfaceProperty){
 		CompositeSurfaceImpl compositeSurfaceImpl = (CompositeSurfaceImpl)surfaceProperty.getObject();
+		compositeSurfaceGmlId = compositeSurfaceImpl.getId(); // deze id moet bovenaan in de poly file komen
+		if (compositeSurfaceGmlId==null){
+			compositeSurfaceGmlId = NO_ID_INDICATOR;
+		}
 		List<SurfaceProperty> surfaceMember = compositeSurfaceImpl.getSurfaceMember(); 
 		int facetNr = 0;
 		for (SurfaceProperty surfaceMemberElement : surfaceMember){
@@ -96,7 +99,7 @@ public class VShell {
 	
 	public String toString(){
 		String lineSeparator = System.getProperty ( "line.separator" );
-		String str = "# " + solidId + lineSeparator;
+		String str = "# " + compositeSurfaceGmlId + lineSeparator;// compositeSurfaceGmlId i.p.v. solidId
 		str = str + unicNodes.getSize() + "  " + "3" + " " + "0" + " " + "0" + lineSeparator;
 		//# Node index, node ordinates
 		int i = 0;

@@ -21,7 +21,7 @@ public class VReaderWriter {
 	private VOutputFile output;
 	private File sourceFile;
 	private File destinationFolder;
-	private int shellNr = 1;
+	private int shellNr;
 	private int buildingNr = 1;
 	
 	public VReaderWriter(File sourceFile, File destinationFolder){
@@ -34,42 +34,30 @@ public class VReaderWriter {
 		VStringStore stringStore = new VStringStore();
 		ArrayList<Building> buildingList = input.readAllBuildings();	
 		for (Building building : buildingList){
-			String buildingId = building.getId();
-      // System.out.println("BuildingId: " + buildingId);
 			VConstruct<Building> construct = new VConstruct<Building>();
 			construct.store(building);
 			construct.setStringStore(stringStore);
 			construct.organize();
-			for (String str :stringStore.getShellStrings() ){	
-        // System.out.println("Raw string begin\n" + str + "\n Raw string end");
-				// find position of INTERIOR_ or EXTERIOR_INDICATOR
-				int endIndex = str.indexOf("EX");
-				String where = ".0";
-				if (endIndex == -1){ // meaning: there is no "EX" in str, so it is not an exterior shell
-					endIndex = str.indexOf("IN");
-					where = ".1";
+			shellNr = 0;
+			String solidId = "";
+			for (String shellString :stringStore.getShellStrings() ){	
+				String fileName = "";
+				if (shellNr == 0){	//position 0 of shellStrings holds solidId
+					solidId = shellString;
+					System.out.println(solidId);
 				}
-				
-				// split of  part of str for file name
-				String helpStr = str.substring(2,endIndex);//+2 verwijderd
-        destinationName = destinationFolder.getPath() +"/"+ "shell-" + shellNr + "_" + helpStr + where + ".poly";
-        // destinationName = destinationFolder.getPath() +"/"+ helpStr + where + ".poly";
-				
-				//Take away INTERIOR_ or EXTERIOR_INDICATOR from ID
-				String beginStr = str.substring(0, endIndex);
-				String endStr = str.substring(endIndex + 2);
-				str = beginStr + endStr;
-        // System.out.println(destinationName);
-        // System.out.println(str);
-				output = new VOutputFile(new File(destinationName));
-				output.writeBuilding(str);
-				//
+				else{
+					if (solidId.substring(0,2).equals("-1")){
+						fileName = fileName + shellNr;
+					}
+					destinationName = destinationFolder.getPath() + "/" + fileName + solidId + ".poly"; 
+					output = new VOutputFile(new File(destinationName));
+					output.writeBuilding(shellString);
+				}
 				shellNr++;
 			}
 			buildingNr++;
 			stringStore.clear();
-      // System.out.println("Number of buildings written to disk: " + (buildingNr-1) );
-      // System.out.println("Number of shells: " + (shellNr-1));
 		}
 	}
 	
@@ -78,6 +66,6 @@ public class VReaderWriter {
 	}
 	
 	public int getNumberOfShells(){
-		return shellNr - 1;
+		return shellNr;
 	}
 }

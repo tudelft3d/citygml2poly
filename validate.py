@@ -7,6 +7,8 @@ import os
 import subprocess
 import shutil
 import glob
+from lxml import etree
+from StringIO import StringIO
 
 # INFILE = '/Users/hugo/data/citygml/CityGML_British_Ordnance_Survey_v1.0.0.xml'
 # INFILE = '/Users/hugo/Dropbox/data/citygml/os_2buildings.xml'
@@ -95,7 +97,9 @@ def dothework(filename):
   # val3dity = '/Users/hugo/project/val3dity/trunk/val3dity'
   i = 0
   print "Number of solids in file:", len(dFiles)
+  invalidsolids = 0
   xmlsolids = []
+  exampleerrors = []
   for solidname in dFiles:
     str1 = val3dity + " -withids -xml " +  " ".join(dFiles[solidname])
     op = subprocess.Popen(str1.split(' '),
@@ -106,6 +110,17 @@ def dothework(filename):
        res = op.communicate()
        raise ValueError(res[1])
     o =  op.communicate()[0]
+    if o.find('ERROR') != -1:
+      invalidsolids += 1
+      i = o.find('<errorCode>')
+      while (i != -1):
+        if exampleerrors.count(o[i+11:i+14]) == 0:
+          exampleerrors.append(o[i+11:i+14])
+        tmp = o[i+1:].find('<errorCode>')
+        if tmp == -1:
+          i = -1
+        else:
+          i = tmp + i + 1
     o = '\t<Solid>\n\t\t<id>' + solidname + '</id>\n' + o + '\t</Solid>'
     xmlsolids.append(o)
 
@@ -115,11 +130,16 @@ def dothework(filename):
   totalxml.append("\n".join(xmlsolids))
   totalxml.append('</ValidatorContext>')
   
-  print "\n", '-'*33, '\n '
-  print "\n".join(totalxml)
+  # print "\n", '-'*33, '\n '
+  # print "\n".join(totalxml)
   fout = open('../report.xml', 'w')
   fout.write('\n'.join(totalxml))
   fout.close()
+  print "Invalid solids: ", invalidsolids
+  print "Errors present:"
+  for each in exampleerrors:
+    print each, dErrors[int(each)]
+  
 
 # 4. wipe the tmp folder
   os.chdir('../')
@@ -127,8 +147,14 @@ def dothework(filename):
 
 
 if __name__ == '__main__':
-  root = Tkinter.Tk()
-  root.wm_title("val3dity -- validation of 3D solids")
-  root.geometry('400x100')
-  TkFileDialogExample(root).pack()#, width=200, height=100).pack()
-  root.mainloop()
+  if len(sys.argv) < 2:
+    print "Usage: python validate.py [-gui] infile.xml"
+    sys.exit()
+  if sys.argv[1] == '-gui':
+    root = Tkinter.Tk()
+    root.wm_title("val3dity -- validation of 3D solids")
+    root.geometry('400x100')
+    TkFileDialogExample(root).pack()#, width=200, height=100).pack()
+    root.mainloop()
+  else:
+    dothework(sys.argv[1])

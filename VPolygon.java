@@ -8,25 +8,31 @@ import org.citygml4j.model.gml.geometry.primitives.DirectPositionList;
 import org.citygml4j.model.gml.geometry.primitives.PosOrPointPropertyOrPointRep;
 
 /**
- * 29-02-2012
- * VPolygon is responsible for a polygon in terms of .poly format
+ * VPolygon is responsible for a polygon in terms of the poly format
+ * or exterior or interior LinearRing in GML terms. 
  * @author kooijmanj1
  *
  */
 public class VPolygon {
-	private ArrayList<VNode> nodes = new ArrayList<VNode>(); // the node values derived from my gml:pppList 
-	private ArrayList<Integer> indices = new ArrayList<Integer>(); // the indices of the nodes in unicNodes that carry this VPolygon
+	/**
+	 * The node values derived from the List<PosOrPointPropertyOrPointRep> pppList or 
+	 * from the DirectPositionList posList that carry this polygon.
+	 */
+	private ArrayList<VNode> nodes = new ArrayList<VNode>(); 
+	/**
+	 * The indices of the nodes in unicNodes that carry this VPolygon
+	 */
+	private ArrayList<Integer> indices = new ArrayList<Integer>();
 	private VUnicNodes unicNodes;
 	 
-	//constructor
 	public VPolygon(VUnicNodes unicNodes){
 		this.unicNodes = unicNodes;
 	}
 	
 	/**
-	 * Case: LinearRing implemented as a PosOrPointPropertyOrPointRep
-	 * Forms nodes, adds them to polygons and to the array of unique nodes
-	 * @param pppList
+	 * Case: LinearRing implemented as a PosOrPointPropertyOrPointRep,
+	 * Forms nodes, adds them to polygons and to the array of unique nodes.
+	 * @param unicNodes pppList
 	 */
 	public VPolygon(VUnicNodes unicNodes, List<PosOrPointPropertyOrPointRep> pppList){
 		this.unicNodes = unicNodes;
@@ -39,7 +45,6 @@ public class VPolygon {
 			for(Double ordinate : ordinates){
 				node.addOrdinate(index, ordinate);
 				index++;			
-				// System.out.println("" + nodeNr + " " + index + " " + ordinate + "  ");
 			}
 			nodeNr++;
 			this.addNode(node);
@@ -50,10 +55,10 @@ public class VPolygon {
 	}
 	
 	/**
-	 * Case: LinearRing implemented as DirectPositionList
-	 * Forms nodes, adds them to polygons and to the array of unique nodes:
-	 * adds polygons to facet
-	 * @param posList
+	 * Case: LinearRing implemented as DirectPositionList,
+	 * Forms nodes, adds them to polygons and to the array of unique nodes, when nodes 
+	 * of this polygon are complete, nodes are converted to indices.
+	 * @param unicNodes posList
 	 */
 	public VPolygon(VUnicNodes unicNodes, DirectPositionList posList){
 		this.unicNodes = unicNodes;
@@ -64,7 +69,6 @@ public class VPolygon {
 		for (Double ordinate : ordinates){
 			node.addOrdinate(index, ordinate);
 			index++;
-			// System.out.println("" + nodeNr + " " + index + " " + ordinate + "  ");
 			if ( index == 3){
 				index = 0;
 				this.addNode(node);
@@ -77,7 +81,7 @@ public class VPolygon {
 	}
 	
 	/**
-	 * Adds only nodes that are not present in nodes
+	 * Adds a node only that is not present in nodes
 	 * @param node
 	 */
 	public void addNode(VNode node){
@@ -113,8 +117,8 @@ public class VPolygon {
 	}
 	
 	/**
-	 * 	Derives index values from the facet nodes by comparing coordinates 
-	 *	between facet nodes and nodes in the array of unique nodes
+	 * 	Derives index values from the polygon nodes by comparing coordinates 
+	 *	between polygon nodes and nodes in the array of unique nodes
 	 * @param polygon
 	 */
 	private void convertNodesToIndices(){
@@ -127,8 +131,10 @@ public class VPolygon {
 		}
 	}
 	
-	
-	
+	/**
+	 * Concatenates the number of indices and the indices themselves of this
+	 * polygon to one String instance as part of the content of the poly file.
+	 */
 	public String toString(){
 		String lineSeparator = System.getProperty ( "line.separator" );
 		String str = "";

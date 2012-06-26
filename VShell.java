@@ -14,8 +14,7 @@ import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
 import org.citygml4j.util.xlink.XLinkResolver;
 
 /**
- * 14-4-2012
- * Responsible for the organization of a shell ( exterior or interior) into a poly file
+ * Responsible for the organization of a shell ( exterior or interior) into a poly file.
  * @author kooijmanj1
  */
 public class VShell {
@@ -24,6 +23,7 @@ public class VShell {
 	private VUnicNodes unicNodes;
 	private VFacet facet;
 	private VPolygon polygon;
+	private VReferedElement element;
 	private String polygonId;
 	private String compositeSurfaceGmlId;
 	
@@ -33,7 +33,7 @@ public class VShell {
 	
 	public void organize(SurfaceProperty surfaceProperty){
 		CompositeSurfaceImpl compositeSurfaceImpl = (CompositeSurfaceImpl)surfaceProperty.getObject();
-		compositeSurfaceGmlId = compositeSurfaceImpl.getId(); // deze id moet bovenaan in de poly file komen
+		compositeSurfaceGmlId = compositeSurfaceImpl.getId();
 		if (compositeSurfaceGmlId==null){
 			compositeSurfaceGmlId = NO_ID_INDICATOR;
 		}
@@ -43,8 +43,7 @@ public class VShell {
 			PolygonImpl polygonImpl = (PolygonImpl)surfaceMemberElement.getSurface();
 			if (polygonImpl == null){ 
 				polygonId  = (surfaceMemberElement.getHref()).substring(1);
-				// System.out.println("Refered polygonId: " + polygonId);
-				VReferedElement element = new VReferedElement(surfaceMemberElement);
+				element = new VReferedElement(surfaceMemberElement);
 				element.search(polygonId);
 				polygonImpl = element.getPolygonImpl();
 			}
@@ -53,7 +52,6 @@ public class VShell {
 				if (polygonId == null){
 					polygonId = NO_ID_INDICATOR;
 				}
-				// System.out.println("polygonId: " + polygonId);
 			}
 			facet = new VFacet(polygonId);
 			
@@ -96,10 +94,15 @@ public class VShell {
 		VNode holePoint = new VNode(0.5, 0.5, 0.5);
 		facet.addHolePoint(holePoint);
 	}
-	
+	/**
+	 * Concatenates all the parts of underlying objects to one poly file string.
+	 */
 	public String toString(){
 		String lineSeparator = System.getProperty ( "line.separator" );
-		String str = "# " + compositeSurfaceGmlId + lineSeparator;// compositeSurfaceGmlId i.p.v. solidId
+		// First line of poly file
+		String str = "# " + compositeSurfaceGmlId + lineSeparator;
+		// Here still code has to be included for the second line to distinguish Solid from MultiSurface
+		//# Part 1 - node list
 		str = str + unicNodes.getSize() + "  " + "3" + " " + "0" + " " + "0" + lineSeparator;
 		//# Node index, node ordinates
 		int i = 0;

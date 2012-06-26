@@ -20,7 +20,6 @@ import org.citygml4j.xml.io.reader.CityGMLReadException;
 import org.citygml4j.xml.io.reader.CityGMLReader;
 
 /**
- * 18-02-2012
  * Responsible for reading CityGML file and producing a building list
  * @author kooijmanj1
  *
@@ -55,7 +54,6 @@ public class VInputFile {
 					Building building = (Building)cityObject;
 					buildings.add(building);
 					aantalGebouwen++;
-					// System.out.println("aantalGebouwen: " + aantalGebouwen);
 				}
 			}		
 		} 

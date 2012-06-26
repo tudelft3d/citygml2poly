@@ -7,15 +7,15 @@ import org.citygml4j.model.citygml.building.Building;
 
 
 /**
- * 7-3-2012
- * Vandaag packages 6 gemaakt. Ook interior shell werkt nu goed, vanaf versie 8 van de poly files
- * Responsible for the overall process; voorlopig want wanneer ik GUI klas erbij
- * maak komt daar mogelijk een deel van de regie te liggen.
+ * Responsible for reading building by building and delegating their organization to VConstruct;
+ * Makes the output file names: each shell is converted into a poly file; the name of 
+ * poly file is the gml:Id of the Solid representing the building or building part;
+ * the Id is followed by "dot0" for the exterior shell and a "dot sequence number" for
+ * interior shells; when solid has no gml:Id, the poly file get a sequential number 
+ * as first part of the file name followed by the dot 0 or dot sequence number as before.
  * @author kooijmanj1
- *
  */
 public class VReaderWriter {
-	
 	private String destinationName;
 	private VInputFile input;
 	private VOutputFile output;

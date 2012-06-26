@@ -13,16 +13,14 @@ import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
 
 
 /**
- * 6-04-2012
  * Generic type to be responsible as well for Building as for BuildingPart
  * analysis of geometries; it should work recursively when BuildingPart 
  * exists;
  * @author kooijmanj1
- *
  * @param <B>
  */
-public class VConstruct<B extends AbstractBuilding>{
-	private B object;
+public class VConstruct<BuildingOrBuildingPart extends AbstractBuilding>{
+	private BuildingOrBuildingPart object;
 	private VSolid solid;
 	private VBoundedBySurface boundedBySurface;
 	private ArrayList<String> shellStrings;
@@ -31,7 +29,7 @@ public class VConstruct<B extends AbstractBuilding>{
 	private String objectId = "-1";
 	
 	
-	public void store(B object){
+	public void store(BuildingOrBuildingPart object){
 		this.object = object;
 	}
 	
@@ -55,48 +53,31 @@ public class VConstruct<B extends AbstractBuilding>{
 			solid = new VSolid(objectId, object.getLod1Solid(), unicNodes);
 			solid.organize();
 			stringStore.store(solid.getShellStrings());
-			// System.out.println("isSetLod1Solid");
 		}
 		if(object.isSetLod2Solid()){
 			String objectId = object.getId();
-			// System.out.println("ObjectId: " + objectId);
 			solid = new VSolid(objectId, object.getLod2Solid(), unicNodes);
 			solid.organize();
 			stringStore.store(solid.getShellStrings());
-			
-      // System.out.println("isSetLod2Solid");
 		}
 //		if (object.isSetBoundedBySurface()){
-//			System.out.println("Found: BoundedBySurface" );
 //			boundedBySurface = new VBoundedBySurface(object.getBoundedBySurface(), unicNodes);
 //			boundedBySurface.organize();
 //			shellStrings = boundedBySurface.getShellStrings();
 //			stringStore.store(boundedBySurface.getShellStrings());
-//			System.out.println("Finalized: BoundedBySurface");
 //		}
 		
 		if(object.isSetConsistsOfBuildingPart()){
 			for (BuildingPartProperty buildingPartProperty : object.getConsistsOfBuildingPart()){
-				VUnicNodes keepUnicNodes = unicNodes;
 				ArrayList<String> keepShellStrings = shellStrings;
 				VStringStore keepStringStore = stringStore;
 				BuildingPart buildingPart = buildingPartProperty.getBuildingPart();
-				String buildingPartId = buildingPart.getId();
-				// System.out.println("BuildingPartId: " + buildingPartId);
 				VConstruct<BuildingPart> construct = new VConstruct<BuildingPart>();
-				// System.out.println("Ik ga nu een construct met BuildingPart maken");
 				construct.store(buildingPart);
 				construct.setShellStrings(keepShellStrings);
 				construct.setStringStore(keepStringStore);
-				//construct.setUnicNodes(keepUnicNodes);
 				construct.organize();
-				// System.out.println("isSetConsistsOfBuildingPart");
-				//shellStrings.addAll(construct.getShellStrings());
 			}
 		}	
 	}
-	
-//	public ArrayList<String> getShellStrings(){
-//		return shellStrings;
-//	}	
 }

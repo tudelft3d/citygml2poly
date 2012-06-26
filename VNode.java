@@ -1,14 +1,20 @@
 
 /**
- * 1-3-2012
+ * Responsible for a <b>node</b>, it holds its ordinates and offers an equals()-method
+ * to decide on equality of two nodes and a toString()-method to deliver the ordinate 
+ * values of this node concatenated in a String instance.
  * @author kooijmanj1
- * Responsible for a node
  */
 public class VNode {
 	private double[] node = new double[3];
-	private double snapMargin = 0.001;
 	/**
-	 * construct an instance of VNode with the ordinate values given
+	 * The snapMargin determines how close ordinate values of two nodes must be for 
+	 * the nodes to considered as one single node.
+	 */
+	private double snapMargin = 0.001;
+	
+	/**
+	 * constructs an instance of VNode with the ordinate values given
 	 * @param o1 x ordinate
 	 * @param o2 y ordinate
 	 * @param o3 z ordinate
@@ -25,14 +31,14 @@ public class VNode {
 		node[index] = ordinate;
 	}
 	
-	
 	private Double getOrdinate(int index){
 		return this.node[index];
 	}
 	
 	/**
-	 * Determines if this node equals the other node
-	 * @param vnode: the other node
+	 * Determines if this node equals the other node, meaning the ordinates of this node 
+	 * are within the range of the other node plus or minus the snapMargin.
+	 * @param node: the other node
 	 * @return true if equal, otherwise false
 	 */
 	public boolean equals(VNode node){
@@ -44,7 +50,10 @@ public class VNode {
 			return false;
 	    }
 	}
-	
+	/**
+	 * Delivers the ordinates concatenated in one string as component in the poly file content.
+	 * @return String
+	 */
 	public String toString(){
 		return "" + this.getOrdinate(0) +" "+ this.getOrdinate(1) +" "+ this.getOrdinate(2);
 	}

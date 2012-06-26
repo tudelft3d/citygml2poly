@@ -7,7 +7,6 @@ import java.io.IOException;
 
 
 /**
- * 18-02-2012
  * Responsible for writing a string to a Poly file
  * @author kooijmanj1
  *

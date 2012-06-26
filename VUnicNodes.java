@@ -3,21 +3,20 @@
 import java.util.ArrayList;
 
 /**
- * 8-04-2012
- * Is responsible for list of unique nodes that carry the facets of a 3D shape. 
+ * Is responsible for list of unique nodes that carry a facet (=planar surface
+ * with or without holes). 
  * @author kooijmanj1
- *
  */
 public class VUnicNodes {
 	private ArrayList<VNode> nodes = new ArrayList<VNode>();
 	
 	/**
-	 * Adds node only if not present yet in list of unic nodes
+	 * Adds node only if not present yet in list of unique nodes
 	 * @param node
 	 */
 	public void addUnicNode(VNode node){
 		boolean notPresent = true;
-		for( VNode n : nodes){ // kan misschien ook met contains()
+		for( VNode n : nodes){
 			if( n.equals(node)){
 				notPresent = false;
 			}
@@ -28,8 +27,7 @@ public class VUnicNodes {
 	}
 	
 	/**
-	 * 
-	 * @param node of what the index in unicNodes is requested
+	 * @param node of which the index in unicNodes is requested
 	 * @return the index of node in unicNodes
 	 */
 	public int getIndex(VNode node){
@@ -53,12 +51,14 @@ public class VUnicNodes {
 	}
 	
 	/**
-	 * Prints the nodes to the poly format
+	 * Concatenates the index of a node in UnicNodes instance with the respective ordinates
+	 * of the node as part of the contents of the poly file. 
 	 */
 	public String toString(){
+		String lineSeparator = System.getProperty ( "line.separator" );
 		String str = "";
 		for (VNode node : nodes){
-			str = str + " " + (nodes.indexOf(node)+1) + " " + node.toString() + "\n";
+			str = str + " " + (nodes.indexOf(node)+1) + " " + node.toString() + lineSeparator;
 		}
 		return str;
 	}

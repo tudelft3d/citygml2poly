@@ -19,6 +19,13 @@ import org.citygml4j.model.gml.geometry.primitives.DirectPositionList;
 import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
 import org.citygml4j.impl.gml.geometry.complexes.*;
 
+/** 
+ * THis class is not using presently, as now the Solid geometry is not checked directly with reference to the MultiSurface
+ * values of the BoundedBySurface Feature. In stead the latter are checked directly and the depending Solid is not checked
+ * anymore.
+ * @author jan
+ *
+ */
 public class VReferedElement {
 	private SurfaceProperty surfaceMemberElement;
 	PolygonImpl polygonImpl;
@@ -52,17 +59,13 @@ public class VReferedElement {
 				PolygonImpl polygonImpl = (PolygonImpl)surfaceMemberElement.getSurface();
 				if((polygonImpl.getId()).equals(polygonId)){
 					this.polygonImpl = polygonImpl;
-					// System.out.println(polygonImpl.toString());
 					i++;
 				}
 			}
-			// System.out.println("Zo vaak een id gelezen: " + i);
-      // System.out.println("klaar");
 		}
 	}
 	
 	public PolygonImpl getPolygonImpl(){
 		return polygonImpl;
 	}
-
 }

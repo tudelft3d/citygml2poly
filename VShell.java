@@ -38,10 +38,11 @@ public class VShell {
 			compositeSurfaceGmlId = NO_ID_INDICATOR;
 		}
 		List<SurfaceProperty> surfaceMember = compositeSurfaceImpl.getSurfaceMember(); 
-		int facetNr = 0;
+//		int facetNr = 0;
 		for (SurfaceProperty surfaceMemberElement : surfaceMember){
 			PolygonImpl polygonImpl = (PolygonImpl)surfaceMemberElement.getSurface();
-			if (polygonImpl == null){ 
+			if (polygonImpl == null){ // Dit if statement can largely be eliminated if we directly address the 
+				// MultiSurfaceGeometry of the _BoundarySurface
 				polygonId  = (surfaceMemberElement.getHref()).substring(1);
 				element = new VReferedElement(surfaceMemberElement);
 				element.search(polygonId);
@@ -53,8 +54,7 @@ public class VShell {
 					polygonId = NO_ID_INDICATOR;
 				}
 			}
-			facet = new VFacet(polygonId);
-			
+			facet = new VFacet(polygonId);		
 			AbstractRingProperty ringPropertyExt = polygonImpl.getExterior(); 
 			LinearRingImpl linearRingImpl = (LinearRingImpl)ringPropertyExt.getObject();
 			
@@ -83,7 +83,7 @@ public class VShell {
 				}
 			}	
 			facets.add(facet);
-			facetNr++;
+//			facetNr++;
 		}
 	}
 	
@@ -119,5 +119,11 @@ public class VShell {
 		str = str + "0" + lineSeparator;
 	return str;
 	}
-
 }
+
+
+
+
+
+
+

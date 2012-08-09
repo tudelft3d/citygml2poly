@@ -1,81 +1,109 @@
-
-
 import java.util.ArrayList;
-import java.util.List;
-
-import org.citygml4j.impl.gml.geometry.primitives.SolidImpl;
 import org.citygml4j.model.citygml.building.AbstractBuilding;
-import org.citygml4j.model.citygml.building.Building;
 import org.citygml4j.model.citygml.building.BuildingPart;
 import org.citygml4j.model.citygml.building.BuildingPartProperty;
-import org.citygml4j.model.gml.geometry.primitives.SolidProperty;
-import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
-
 
 /**
  * Generic type to be responsible as well for Building as for BuildingPart
- * analysis of geometries; it should work recursively when BuildingPart 
+ * analysis of geometries; it works recursively when BuildingPart 
  * exists;
  * @author kooijmanj1
- * @param <B>
+ * @param <BuildingOrBuildingPart>
  */
 public class VConstruct<BuildingOrBuildingPart extends AbstractBuilding>{
 	private BuildingOrBuildingPart object;
 	private VSolid solid;
-	private VBoundedBySurface boundedBySurface;
-	private ArrayList<String> shellStrings;
-	private VStringStore stringStore;
+	private VMultiSurface multiSurface;
+	private ArrayList<String[]> shellDataArrays;
+	private VShellDataStore shellDataStore;
 	private VUnicNodes unicNodes = new VUnicNodes();
-	private String objectId = "-1";
-	
 	
 	public void store(BuildingOrBuildingPart object){
 		this.object = object;
 	}
-	
-	public void setShellStrings(ArrayList<String> shellStrings){
-		this.shellStrings = shellStrings;
+		
+	public void setShellDataArrays(ArrayList<String[]> shellDataArrays){
+		this.shellDataArrays = shellDataArrays;
 	}
 	
-	public void setStringStore(VStringStore stringStore){
-		this.stringStore = stringStore;
+	public void setShellDataStore(VShellDataStore shellDataStore){
+		this.shellDataStore = shellDataStore;
 	}
 	
 	public void setUnicNodes(VUnicNodes unicNodes){
 		this.unicNodes = unicNodes;
 	}
 	
+	/**
+	 * For conditions that various geometries may occur at the various 
+	 * LODs see CityGML Encoding standard (OGC 08-007r1 page 61).
+	 * Only one of lod1MultiSurface and lod1Solid properties must be used.
+	 * If building isSetBoundedBySurface than on that level MultiSurface 
+	 * will appear in LOD2, LOD3 and/or LOD4.
+	 * In case building isSetBoundedBySurface than additional 
+	 * MultiSurface and Solid geometries on building level
+	 * should refer to the MultiSurface implementation on BoundarySurface level.
+	 * If building is not isSetBoundedBySurface than on all LODs Solid and 
+	 * MultiSurface could have their own geometric representation.
+	 */
 	public void organize(){
+		if(object.isSetLod1MultiSurface()){
+			multiSurface = new VMultiSurface(object.getLod1MultiSurface(), unicNodes);
+			multiSurface.organize();
+			shellDataStore.store(multiSurface.getShellDataArray());
+		}
 		if(object.isSetLod1Solid()){
-			if (object.getId() != null){
-				objectId = object.getId();
+			solid = new VSolid(object.getLod1Solid(), unicNodes);
+			solid.organize();
+			shellDataStore.store(solid.getShellDataArray());
+		}
+		if (object.isSetBoundedBySurface()){
+			multiSurface = new VMultiSurface(unicNodes);
+			multiSurface.organize(object.getBoundedBySurface());
+			shellDataStore.store(multiSurface.getShellDataArray());
+		}
+		else{
+			if(object.isSetLod2MultiSurface()){
+				multiSurface = new VMultiSurface(object.getLod2MultiSurface(), unicNodes);
+				multiSurface.organize();
+				shellDataStore.store(multiSurface.getShellDataArray());
 			}
-			solid = new VSolid(objectId, object.getLod1Solid(), unicNodes);
-			solid.organize();
-			stringStore.store(solid.getShellStrings());
+			if(object.isSetLod2Solid()){
+				solid = new VSolid(object.getLod2Solid(), unicNodes);
+				solid.organize();
+				shellDataStore.store(solid.getShellDataArray());
+			}
+			if(object.isSetLod3MultiSurface()){
+				multiSurface = new VMultiSurface(object.getLod3MultiSurface(), unicNodes);
+				multiSurface.organize();
+				shellDataStore.store(multiSurface.getShellDataArray());
+			}
+			if(object.isSetLod3Solid()){
+				solid = new VSolid(object.getLod3Solid(), unicNodes);
+				solid.organize();
+				shellDataStore.store(solid.getShellDataArray());
+			}
+			if(object.isSetLod4MultiSurface()){
+				multiSurface = new VMultiSurface(object.getLod4MultiSurface(), unicNodes);
+				multiSurface.organize();
+				shellDataStore.store(multiSurface.getShellDataArray());
+			}
+			if(object.isSetLod4Solid()){
+				solid = new VSolid(object.getLod4Solid(), unicNodes);
+				solid.organize();
+				shellDataStore.store(solid.getShellDataArray());
+			}
 		}
-		if(object.isSetLod2Solid()){
-			String objectId = object.getId();
-			solid = new VSolid(objectId, object.getLod2Solid(), unicNodes);
-			solid.organize();
-			stringStore.store(solid.getShellStrings());
-		}
-//		if (object.isSetBoundedBySurface()){
-//			boundedBySurface = new VBoundedBySurface(object.getBoundedBySurface(), unicNodes);
-//			boundedBySurface.organize();
-//			shellStrings = boundedBySurface.getShellStrings();
-//			stringStore.store(boundedBySurface.getShellStrings());
-//		}
-		
+
 		if(object.isSetConsistsOfBuildingPart()){
 			for (BuildingPartProperty buildingPartProperty : object.getConsistsOfBuildingPart()){
-				ArrayList<String> keepShellStrings = shellStrings;
-				VStringStore keepStringStore = stringStore;
+				ArrayList<String[]> keepShellDataArrays = shellDataArrays;
+				VShellDataStore keepShellDataStore = shellDataStore;
 				BuildingPart buildingPart = buildingPartProperty.getBuildingPart();
 				VConstruct<BuildingPart> construct = new VConstruct<BuildingPart>();
 				construct.store(buildingPart);
-				construct.setShellStrings(keepShellStrings);
-				construct.setStringStore(keepStringStore);
+				construct.setShellDataArrays(keepShellDataArrays);
+				construct.setShellDataStore(keepShellDataStore);
 				construct.organize();
 			}
 		}	

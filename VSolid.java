@@ -1,10 +1,6 @@
-
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.citygml4j.impl.gml.geometry.primitives.SolidImpl;
-import org.citygml4j.impl.gml.geometry.primitives.SurfacePropertyImpl;
 import org.citygml4j.model.gml.geometry.primitives.SolidProperty;
 import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
 	/**
@@ -17,54 +13,44 @@ public class VSolid{
 	private static final String NO_ID_INDICATOR = "-1";
 	private SolidProperty solidProperty;
 	private VShell shell;
-	private ArrayList<String> shellStrings = new ArrayList<String>();
+	private String[] shellData = new String[2];
+	private ArrayList<String[]> shellDataArray = new ArrayList<String[]>();
 	private VUnicNodes unicNodes;
-	private String objectId;
 
-
-	public VSolid(String objectId, SolidProperty solidProperty, VUnicNodes unicNodes){
-		this.objectId = objectId;
+	public VSolid(SolidProperty solidProperty, VUnicNodes unicNodes){
 		this.solidProperty = solidProperty;
 		this.unicNodes = unicNodes;
 	}
 	
 	public void organize(){
-		if (solidProperty.isSetSolid()){    
-			SolidImpl solidImpl = (SolidImpl)solidProperty.getObject();	
-			String solidGmlId = solidImpl.getId();
-			if (solidGmlId == null){
-				solidGmlId = NO_ID_INDICATOR;
-			}
-			
-			//exterior shell
-			SurfaceProperty exteriorSurfaceProperty = solidImpl.getExterior(); 
-			String solidId = solidGmlId + EXTERIOR_INDICATOR;
-			shellStrings.add(solidId); // first element of shellStrings is solidId for the file name
+		SolidImpl solidImpl = (SolidImpl)solidProperty.getObject();	
+		String solidGmlId = solidImpl.getId();
+		if (solidGmlId == null){
+			solidGmlId = NO_ID_INDICATOR;
+		}
+		//exterior shell
+		SurfaceProperty exteriorSurfaceProperty = solidImpl.getExterior(); 
+		String solidId = solidGmlId + EXTERIOR_INDICATOR;
+		shellData[0] = solidId; //first element of shellData is Id for file name
+		shell = new VShell(unicNodes);
+		shell.organize(exteriorSurfaceProperty);
+		shellData[1] = shell.toString();
+		shellDataArray.add(shellData);			
+		// now the inner shells
+		int innerShellNr = 1;
+		List<SurfaceProperty> surfacePropertyList = solidImpl.getInterior();
+		for (SurfaceProperty interiorSurfaceProperty : surfacePropertyList){
+			solidId = solidGmlId + "." + innerShellNr; //sequential number >0 as INTERIOR_INDICATOR
+			shellData[0] = solidId;
 			shell = new VShell(unicNodes);
-			shell.organize(exteriorSurfaceProperty);
-			shellStrings.add(shell.toString());
-			
-			
-			// now the inner shells
-			int shellNr = 1;
-			List<SurfaceProperty> surfacePropertyList = solidImpl.getInterior();
-			for (SurfaceProperty interiorSurfaceProperty : surfacePropertyList){
-				solidId = solidGmlId + "." + shellNr; //sequential number as INTERIOR_INDICATOR
-				shellStrings.add(solidId);
-				shell = new VShell(unicNodes);
-				shell.organize(interiorSurfaceProperty);
-				shellStrings.add(shell.toString());
-				shellNr++;
-			}
-		}
-		else{
-			String href = solidProperty.getHref();
+			shell.organize(interiorSurfaceProperty);
+			shellData[1] = shell.toString();
+			shellDataArray.add(shellData);
+			innerShellNr++;
 		}
 	}
 	
-	public ArrayList<String> getShellStrings(){
-		return shellStrings;
+	public ArrayList<String[]> getShellDataArray(){
+		return shellDataArray;
 	}
-	
-
 }

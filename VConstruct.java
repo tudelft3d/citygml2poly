@@ -40,16 +40,15 @@ public class VConstruct<BuildingOrBuildingPart extends AbstractBuilding>{
 	 * Only one of lod1MultiSurface and lod1Solid properties must be used.
 	 * If building isSetBoundedBySurface than on that level MultiSurface 
 	 * will appear in LOD2, LOD3 and/or LOD4.
-	 * In case building isSetBoundedBySurface than additional 
-	 * MultiSurface and Solid geometries on building level
+	 * In that case additional MultiSurface and Solid geometries on building level
 	 * should refer to the MultiSurface implementation on BoundarySurface level.
 	 * If building is not isSetBoundedBySurface than on all LODs Solid and 
 	 * MultiSurface could have their own geometric representation.
 	 */
 	public void organize(){
 		if(object.isSetLod1MultiSurface()){
-			multiSurface = new VMultiSurface(object.getLod1MultiSurface(), unicNodes);
-			multiSurface.organize();
+			multiSurface = new VMultiSurface(unicNodes);
+			multiSurface.organize(object.getLod1MultiSurface(), false);
 			shellDataStore.store(multiSurface.getShellDataArray());
 		}
 		if(object.isSetLod1Solid()){
@@ -64,8 +63,8 @@ public class VConstruct<BuildingOrBuildingPart extends AbstractBuilding>{
 		}
 		else{
 			if(object.isSetLod2MultiSurface()){
-				multiSurface = new VMultiSurface(object.getLod2MultiSurface(), unicNodes);
-				multiSurface.organize();
+				multiSurface = new VMultiSurface(unicNodes);
+				multiSurface.organize(object.getLod2MultiSurface(), false);
 				shellDataStore.store(multiSurface.getShellDataArray());
 			}
 			if(object.isSetLod2Solid()){
@@ -74,8 +73,8 @@ public class VConstruct<BuildingOrBuildingPart extends AbstractBuilding>{
 				shellDataStore.store(solid.getShellDataArray());
 			}
 			if(object.isSetLod3MultiSurface()){
-				multiSurface = new VMultiSurface(object.getLod3MultiSurface(), unicNodes);
-				multiSurface.organize();
+				multiSurface = new VMultiSurface(unicNodes);
+				multiSurface.organize(object.getLod3MultiSurface(), false);
 				shellDataStore.store(multiSurface.getShellDataArray());
 			}
 			if(object.isSetLod3Solid()){
@@ -84,8 +83,8 @@ public class VConstruct<BuildingOrBuildingPart extends AbstractBuilding>{
 				shellDataStore.store(solid.getShellDataArray());
 			}
 			if(object.isSetLod4MultiSurface()){
-				multiSurface = new VMultiSurface(object.getLod4MultiSurface(), unicNodes);
-				multiSurface.organize();
+				multiSurface = new VMultiSurface(unicNodes);
+				multiSurface.organize(object.getLod4MultiSurface(), false);
 				shellDataStore.store(multiSurface.getShellDataArray());
 			}
 			if(object.isSetLod4Solid()){

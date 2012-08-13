@@ -7,11 +7,9 @@ import org.citygml4j.impl.gml.geometry.complexes.CompositeSurfaceImpl;
 import org.citygml4j.impl.gml.geometry.primitives.LinearRingImpl;
 import org.citygml4j.impl.gml.geometry.primitives.PolygonImpl;
 import org.citygml4j.model.gml.geometry.primitives.AbstractRingProperty;
-import org.citygml4j.model.gml.geometry.primitives.DirectPosition;
 import org.citygml4j.model.gml.geometry.primitives.DirectPositionList;
 import org.citygml4j.model.gml.geometry.primitives.PosOrPointPropertyOrPointRep;
 import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
-import org.citygml4j.util.xlink.XLinkResolver;
 
 /**
  * Responsible for the organization of a shell ( exterior or interior) into a poly file.
@@ -19,6 +17,7 @@ import org.citygml4j.util.xlink.XLinkResolver;
  */
 public class VShell {
 	private final String NO_ID_INDICATOR = "-1";
+	private final int SOLID_INDICATOR = 2;
 	private ArrayList<VFacet> facets = new ArrayList<VFacet>();
 	private VUnicNodes unicNodes;
 	private VFacet facet;
@@ -38,11 +37,9 @@ public class VShell {
 			compositeSurfaceGmlId = NO_ID_INDICATOR;
 		}
 		List<SurfaceProperty> surfaceMember = compositeSurfaceImpl.getSurfaceMember(); 
-//		int facetNr = 0;
 		for (SurfaceProperty surfaceMemberElement : surfaceMember){
 			PolygonImpl polygonImpl = (PolygonImpl)surfaceMemberElement.getSurface();
-			if (polygonImpl == null){ // Dit if statement can largely be eliminated if we directly address the 
-				// MultiSurfaceGeometry of the _BoundarySurface
+			if (polygonImpl == null){ 
 				polygonId  = (surfaceMemberElement.getHref()).substring(1);
 				element = new VReferedElement(surfaceMemberElement);
 				element.search(polygonId);
@@ -83,7 +80,6 @@ public class VShell {
 				}
 			}	
 			facets.add(facet);
-//			facetNr++;
 		}
 	}
 	
@@ -101,7 +97,8 @@ public class VShell {
 		String lineSeparator = System.getProperty ( "line.separator" );
 		// First line of poly file
 		String str = "# " + compositeSurfaceGmlId + lineSeparator;
-		// Here still code has to be included for the second line to distinguish Solid from MultiSurface
+		// Second line of poly indicates the origin of the shell data
+		str = str + "# " + SOLID_INDICATOR + lineSeparator;
 		//# Part 1 - node list
 		str = str + unicNodes.getSize() + "  " + "3" + " " + "0" + " " + "0" + lineSeparator;
 		//# Node index, node ordinates

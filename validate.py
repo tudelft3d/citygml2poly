@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+### content of run.sh that should be in the path somewhere
+# javac -classpath /Users/hugo/code/citygml4j-1.0-java6/lib/citygml4j.jar  *.java
+# java -classpath /Users/hugo/code/citygml4j-1.0-java6/lib/citygml4j.jar:. citygml2poly $1 $2
+
+
 import Tkinter, Tkconstants, tkFileDialog
 import sys
 import os
@@ -82,8 +87,8 @@ def dothework(filename):
   print "Done"
   # print "Number of solids in file:", len(glob.glob('tmp/*.poly'))
 
-  print "doei doei"
-  sys.exit()
+  # print "doei doei"
+  # sys.exit()
   
 # 3. validate each building/shell
   os.chdir('tmp')
@@ -104,6 +109,16 @@ def dothework(filename):
   xmlsolids = []
   exampleerrors = []
   for solidname in dFiles:
+    # check if solid or multisurface in first file
+    t = open(dFiles[solidname][0])
+    t.readline()
+    if t.readline().split()[1] == '1':
+      multisurface = True
+    else:
+      multisurface = False
+    t.close()
+    
+    # validate with val3dity
     str1 = val3dity + " -withids -xml " +  " ".join(dFiles[solidname])
     op = subprocess.Popen(str1.split(' '),
                           stdout=subprocess.PIPE, 
@@ -124,6 +139,15 @@ def dothework(filename):
           i = -1
         else:
           i = tmp + i + 1
+    else: #-- no error detected, WARNING if MultiSurface!
+      if multisurface == True:
+        print 'WARNING: MultiSurfce is acutally a solid'
+        s = []
+        s.append("\t\t<ValidatorMessage>")
+        s.append("\t\t\t<type>WARNING</type>")
+        s.append("\t\t\t<explanation>MultiSurfaces form a Solid</explanation>")
+        s.append("\t\t</ValidatorMessage>\n")
+        o = "\n".join(s)
     o = '\t<Solid>\n\t\t<id>' + solidname + '</id>\n' + o + '\t</Solid>'
     xmlsolids.append(o)
 
@@ -145,11 +169,11 @@ def dothework(filename):
   
 
 # 4. wipe the tmp folder
-  # os.chdir('../')
-  # shutil.rmtree('tmp')
+  os.chdir('../')
+  shutil.rmtree('tmp')
 
 # 5. open textmate
-  os.system("mate report.xml")
+  # os.system("mate report.xml")
 
 
 if __name__ == '__main__':

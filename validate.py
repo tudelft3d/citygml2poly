@@ -82,6 +82,9 @@ def dothework(filename):
   print "Done"
   # print "Number of solids in file:", len(glob.glob('tmp/*.poly'))
 
+  print "doei doei"
+  sys.exit()
+  
 # 3. validate each building/shell
   os.chdir('tmp')
   dFiles = {}
@@ -142,8 +145,11 @@ def dothework(filename):
   
 
 # 4. wipe the tmp folder
-  os.chdir('../')
-  shutil.rmtree('tmp')
+  # os.chdir('../')
+  # shutil.rmtree('tmp')
+
+# 5. open textmate
+  os.system("mate report.xml")
 
 
 if __name__ == '__main__':

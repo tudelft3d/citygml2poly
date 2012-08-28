@@ -23,36 +23,57 @@ import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
 public class VMultiSurface{
 	private static final String EXTERIOR_INDICATOR = ".0";
 	private static final String NO_ID_INDICATOR = "-1";
-	private static final int DIRECT_BUILDING_MULTISURFACE = 0;
-	private static final int BOUNDED_BY_MULTISURFACE = 1;
-	private int multiSurfaceIndicator;
+	private static final String GEOMETRY_INDICATOR = "0"; // for MultiSurface geometry
 	private ArrayList<VFacet> facets = new ArrayList<VFacet>();
 	private VUnicNodes unicNodes;
 	private VFacet facet;
 	private VPolygon polygon;
+	private VReferedElement element;
 	private String polygonId;
 	private String multiSurfaceGmlId;
 	private String[] shellData = new String[2];
 	private ArrayList<String[]> shellDataArray = new ArrayList<String[]>();
+	private int lod;
+	private boolean wrapup =false; // noodmaatregel om te voorkomen dat voor elk surface een poly wordt gemaakt
+	private boolean boundedBy = false;
 	
-	public VMultiSurface(VUnicNodes unicNodes){
+	public VMultiSurface(VUnicNodes unicNodes, int lod){
 		this.unicNodes = unicNodes;
+		this.lod = lod;
 	}
 	
 	public void organize(List<BoundarySurfaceProperty> listBoundarySurfaceProperty){
+		boundedBy = true;
+		MultiSurfaceProperty multiSurfaceProperty = null;
+		int content = listBoundarySurfaceProperty.size();
+		int count = 0;
 		for (BoundarySurfaceProperty boundarySurfaceProperty : listBoundarySurfaceProperty){
-			AbstractBoundarySurface abstractBoundarySurface = boundarySurfaceProperty.getObject();
-			MultiSurfaceProperty multiSurfaceProperty = abstractBoundarySurface.getLod2MultiSurface();
-			multiSurfaceIndicator = BOUNDED_BY_MULTISURFACE;
-			this.organize(multiSurfaceProperty, true);		
+			count++;
+			AbstractBoundarySurface abstractBoundarySurface = boundarySurfaceProperty.getObject();			
+			if (lod == 2){
+				if (abstractBoundarySurface.isSetLod2MultiSurface()){
+					multiSurfaceProperty = abstractBoundarySurface.getLod2MultiSurface();				
+					this.organize(multiSurfaceProperty);
+				}
+			}			
+			if (lod == 3){
+				if (abstractBoundarySurface.isSetLod3MultiSurface()){
+					multiSurfaceProperty = abstractBoundarySurface.getLod3MultiSurface();				
+					this.organize(multiSurfaceProperty);
+				}
+			}
+			if (lod == 4){
+				if (abstractBoundarySurface.isSetLod4MultiSurface()){
+					multiSurfaceProperty = abstractBoundarySurface.getLod4MultiSurface();				
+					this.organize(multiSurfaceProperty);
+				}
+			}
+			wrapup = count == content - 1;
+			
 		}
-		String multiSurfaceId = multiSurfaceGmlId + EXTERIOR_INDICATOR;
-		shellData[0] = multiSurfaceId;
-		shellData[1] = this.toString();
-		shellDataArray.add(shellData);
 	}
 			
-	public void organize(MultiSurfaceProperty multiSurfaceProperty, boolean fromBoundarySurfaceProperty){
+	public void organize(MultiSurfaceProperty multiSurfaceProperty){
 		if(multiSurfaceProperty.isSetMultiSurface()){
 			MultiSurfaceImpl multiSurfaceImpl = (MultiSurfaceImpl)multiSurfaceProperty.getObject();
 			multiSurfaceGmlId = multiSurfaceImpl.getId();
@@ -64,9 +85,17 @@ public class VMultiSurface{
 		List<SurfaceProperty> surfaceMember = multiSurface.getSurfaceMember();
 		for (SurfaceProperty surfaceMemberElement : surfaceMember){ 	
 			PolygonImpl polygonImpl = (PolygonImpl)surfaceMemberElement.getSurface();
-			polygonId = polygonImpl.getId();
-			if (polygonId == null){
-				polygonId = NO_ID_INDICATOR;
+			if (polygonImpl == null){ 
+				polygonId  = (surfaceMemberElement.getHref()).substring(1);
+				element = new VReferedElement(surfaceMemberElement, lod);
+				element.search(polygonId);
+				polygonImpl = element.getPolygonImpl();
+			}
+			else{
+				polygonId = polygonImpl.getId();
+				if (polygonId == null){
+					polygonId = NO_ID_INDICATOR;
+				}
 			}
 			facet = new VFacet(polygonId);
 			AbstractRingProperty abstractRingProperty = polygonImpl.getExterior();
@@ -87,13 +116,12 @@ public class VMultiSurface{
 			}
 			facets.add(facet);
 		}
-		if(!fromBoundarySurfaceProperty){
-			multiSurfaceIndicator = DIRECT_BUILDING_MULTISURFACE;
-			String multiSurfaceId = multiSurfaceGmlId + EXTERIOR_INDICATOR;
-			shellData[0] = multiSurfaceId;
-			shellData[1] = this.toString();
-			shellDataArray.add(shellData);
-		}
+
+		String multiSurfaceId = multiSurfaceGmlId + EXTERIOR_INDICATOR;
+		shellData[0] = multiSurfaceId;
+		shellData[1] = this.toString();
+		if (wrapup) shellDataArray.add(shellData);
+		if (!boundedBy) shellDataArray.add(shellData);
 	}
 	
 	/**
@@ -104,7 +132,7 @@ public class VMultiSurface{
 		//First line of poly file, but no alternative for compositSurfaceGmlId
 		String str = "# " + multiSurfaceGmlId + lineSeparator;
 		// Second line of poly indicates the origin of the shell data
-		str = str + "# " + multiSurfaceIndicator + lineSeparator;
+		str = str + "# " + GEOMETRY_INDICATOR + lineSeparator;
 		//# Part 1 - node list
 		str = str + unicNodes.getSize() + "  " + "3" + " " + "0" + " " + "0" + lineSeparator;
 		//# Node index, node ordinates

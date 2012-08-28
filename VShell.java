@@ -17,7 +17,7 @@ import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
  */
 public class VShell {
 	private final String NO_ID_INDICATOR = "-1";
-	private final int SOLID_INDICATOR = 2;
+	private final int GEOMETRY_INDICATOR = 1; // for Solid geometry
 	private ArrayList<VFacet> facets = new ArrayList<VFacet>();
 	private VUnicNodes unicNodes;
 	private VFacet facet;
@@ -25,9 +25,11 @@ public class VShell {
 	private VReferedElement element;
 	private String polygonId;
 	private String compositeSurfaceGmlId;
+	private int lod;
 	
-	public VShell(VUnicNodes unicNodes){
+	public VShell(VUnicNodes unicNodes, int lod){
 		this.unicNodes = unicNodes;
+		this.lod = lod;
 	}
 	
 	public void organize(SurfaceProperty surfaceProperty){
@@ -41,7 +43,7 @@ public class VShell {
 			PolygonImpl polygonImpl = (PolygonImpl)surfaceMemberElement.getSurface();
 			if (polygonImpl == null){ 
 				polygonId  = (surfaceMemberElement.getHref()).substring(1);
-				element = new VReferedElement(surfaceMemberElement);
+				element = new VReferedElement(surfaceMemberElement, lod);
 				element.search(polygonId);
 				polygonImpl = element.getPolygonImpl();
 			}
@@ -98,7 +100,7 @@ public class VShell {
 		// First line of poly file
 		String str = "# " + compositeSurfaceGmlId + lineSeparator;
 		// Second line of poly indicates the origin of the shell data
-		str = str + "# " + SOLID_INDICATOR + lineSeparator;
+		str = str + "# " + GEOMETRY_INDICATOR + lineSeparator;
 		//# Part 1 - node list
 		str = str + unicNodes.getSize() + "  " + "3" + " " + "0" + " " + "0" + lineSeparator;
 		//# Node index, node ordinates

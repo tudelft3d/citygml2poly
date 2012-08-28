@@ -17,6 +17,7 @@ public class VConstruct<BuildingOrBuildingPart extends AbstractBuilding>{
 	private ArrayList<String[]> shellDataArrays;
 	private VShellDataStore shellDataStore;
 	private VUnicNodes unicNodes = new VUnicNodes();
+	private int  lod;
 	
 	public void store(BuildingOrBuildingPart object){
 		this.object = object;
@@ -47,53 +48,70 @@ public class VConstruct<BuildingOrBuildingPart extends AbstractBuilding>{
 	 */
 	public void organize(){
 		if(object.isSetLod1MultiSurface()){
-			multiSurface = new VMultiSurface(unicNodes);
-			multiSurface.organize(object.getLod1MultiSurface(), false);
+			multiSurface = new VMultiSurface(unicNodes, lod);
+			multiSurface.organize(object.getLod1MultiSurface());
 			shellDataStore.store(multiSurface.getShellDataArray());
 		}
 		if(object.isSetLod1Solid()){
-			solid = new VSolid(object.getLod1Solid(), unicNodes);
+			solid = new VSolid(object.getLod1Solid(), unicNodes, lod );
+			solid.organize();
+			shellDataStore.store(solid.getShellDataArray());
+		}		
+		if(object.isSetLod2MultiSurface()){
+			lod = 2;
+			multiSurface = new VMultiSurface(unicNodes, lod);
+			multiSurface.organize(object.getLod2MultiSurface());
+			shellDataStore.store(multiSurface.getShellDataArray());
+		}
+		if(object.isSetLod2Solid()){
+			lod = 2;
+			solid = new VSolid(object.getLod2Solid(), unicNodes, lod );
 			solid.organize();
 			shellDataStore.store(solid.getShellDataArray());
 		}
-		if (object.isSetBoundedBySurface()){
-			multiSurface = new VMultiSurface(unicNodes);
+		if (object.isSetBoundedBySurface() &&
+				!(object.isSetLod2Solid() || object.isSetLod2MultiSurface() ) ){
+			multiSurface = new VMultiSurface(unicNodes, 2);
 			multiSurface.organize(object.getBoundedBySurface());
 			shellDataStore.store(multiSurface.getShellDataArray());
 		}
-		else{
-			if(object.isSetLod2MultiSurface()){
-				multiSurface = new VMultiSurface(unicNodes);
-				multiSurface.organize(object.getLod2MultiSurface(), false);
-				shellDataStore.store(multiSurface.getShellDataArray());
-			}
-			if(object.isSetLod2Solid()){
-				solid = new VSolid(object.getLod2Solid(), unicNodes);
-				solid.organize();
-				shellDataStore.store(solid.getShellDataArray());
-			}
-			if(object.isSetLod3MultiSurface()){
-				multiSurface = new VMultiSurface(unicNodes);
-				multiSurface.organize(object.getLod3MultiSurface(), false);
-				shellDataStore.store(multiSurface.getShellDataArray());
-			}
-			if(object.isSetLod3Solid()){
-				solid = new VSolid(object.getLod3Solid(), unicNodes);
-				solid.organize();
-				shellDataStore.store(solid.getShellDataArray());
-			}
-			if(object.isSetLod4MultiSurface()){
-				multiSurface = new VMultiSurface(unicNodes);
-				multiSurface.organize(object.getLod4MultiSurface(), false);
-				shellDataStore.store(multiSurface.getShellDataArray());
-			}
-			if(object.isSetLod4Solid()){
-				solid = new VSolid(object.getLod4Solid(), unicNodes);
-				solid.organize();
-				shellDataStore.store(solid.getShellDataArray());
-			}
+		if(object.isSetLod3MultiSurface()){
+			lod = 3;
+			multiSurface = new VMultiSurface(unicNodes, lod);
+			multiSurface.organize(object.getLod3MultiSurface());
+			shellDataStore.store(multiSurface.getShellDataArray());
 		}
-
+		if(object.isSetLod3Solid()){
+			lod = 3;
+			solid = new VSolid(object.getLod3Solid(), unicNodes, lod );
+			solid.organize();
+			shellDataStore.store(solid.getShellDataArray());
+		}
+		if (object.isSetBoundedBySurface() &&
+				!(object.isSetLod3Solid() || object.isSetLod3MultiSurface() ) ){
+			multiSurface = new VMultiSurface(unicNodes, 3);
+			multiSurface.organize(object.getBoundedBySurface());
+			shellDataStore.store(multiSurface.getShellDataArray());
+		}
+		if(object.isSetLod4MultiSurface()){
+			lod = 4;
+			multiSurface = new VMultiSurface(unicNodes, lod);
+			multiSurface.organize(object.getLod4MultiSurface());
+			shellDataStore.store(multiSurface.getShellDataArray());
+		}
+		if(object.isSetLod4Solid()){
+			lod = 4;
+			solid = new VSolid(object.getLod4Solid(), unicNodes, lod );
+			solid.organize();
+			shellDataStore.store(solid.getShellDataArray());
+		}
+		if (object.isSetBoundedBySurface() &&
+				!(object.isSetLod4Solid() || object.isSetLod4MultiSurface()) ){
+			multiSurface = new VMultiSurface(unicNodes, 4);
+			multiSurface.organize(object.getBoundedBySurface());
+			shellDataStore.store(multiSurface.getShellDataArray());
+		}
+		
 		if(object.isSetConsistsOfBuildingPart()){
 			for (BuildingPartProperty buildingPartProperty : object.getConsistsOfBuildingPart()){
 				ArrayList<String[]> keepShellDataArrays = shellDataArrays;

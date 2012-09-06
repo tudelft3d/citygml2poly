@@ -70,8 +70,6 @@ class TkFileDialogExample(Tkinter.Frame):
 
 
 def dothework(filename):
-  # print os.getcwd()
-  # print filename
 # 1. create and/or clear the tmp folder
   if not os.path.exists("tmp"):
     os.mkdir("tmp")
@@ -112,7 +110,7 @@ def dothework(filename):
     # check if solid or multisurface in first file
     t = open(dFiles[solidname][0])
     t.readline()
-    if t.readline().split()[1] == '1':
+    if t.readline().split()[1] == '0':
       multisurface = True
     else:
       multisurface = False
@@ -141,11 +139,11 @@ def dothework(filename):
           i = tmp + i + 1
     else: #-- no error detected, WARNING if MultiSurface!
       if multisurface == True:
-        print 'WARNING: MultiSurfce is acutally a solid'
+        print 'WARNING: MultiSurfce is actually a valid solid'
         s = []
         s.append("\t\t<ValidatorMessage>")
         s.append("\t\t\t<type>WARNING</type>")
-        s.append("\t\t\t<explanation>MultiSurfaces form a Solid</explanation>")
+        s.append("\t\t\t<explanation>MultiSurfaces form a valid Solid</explanation>")
         s.append("\t\t</ValidatorMessage>\n")
         o = "\n".join(s)
     o = '\t<Solid>\n\t\t<id>' + solidname + '</id>\n' + o + '\t</Solid>'

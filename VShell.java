@@ -3,11 +3,11 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import org.citygml4j.impl.gml.geometry.complexes.CompositeSurfaceImpl;
-import org.citygml4j.impl.gml.geometry.primitives.LinearRingImpl;
-import org.citygml4j.impl.gml.geometry.primitives.PolygonImpl;
+import org.citygml4j.model.gml.geometry.complexes.CompositeSurface;
 import org.citygml4j.model.gml.geometry.primitives.AbstractRingProperty;
 import org.citygml4j.model.gml.geometry.primitives.DirectPositionList;
+import org.citygml4j.model.gml.geometry.primitives.LinearRing;
+import org.citygml4j.model.gml.geometry.primitives.Polygon;
 import org.citygml4j.model.gml.geometry.primitives.PosOrPointPropertyOrPointRep;
 import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
 
@@ -21,9 +21,9 @@ public class VShell {
 	private ArrayList<VFacet> facets = new ArrayList<VFacet>();
 	private VUnicNodes unicNodes;
 	private VFacet facet;
-	private VPolygon polygon;
+	private VPolygon vpolygon;
 	private VReferedElement element;
-	private String polygonId;
+	private String vpolygonId;
 	private String compositeSurfaceGmlId;
 	private int lod;
 	
@@ -33,51 +33,51 @@ public class VShell {
 	}
 	
 	public void organize(SurfaceProperty surfaceProperty){
-		CompositeSurfaceImpl compositeSurfaceImpl = (CompositeSurfaceImpl)surfaceProperty.getObject();
-		compositeSurfaceGmlId = compositeSurfaceImpl.getId();
+		CompositeSurface compositeSurface = (CompositeSurface)surfaceProperty.getObject();
+		compositeSurfaceGmlId = compositeSurface.getId();
 		if (compositeSurfaceGmlId==null){
 			compositeSurfaceGmlId = NO_ID_INDICATOR;
 		}
-		List<SurfaceProperty> surfaceMember = compositeSurfaceImpl.getSurfaceMember(); 
+		List<SurfaceProperty> surfaceMember = compositeSurface.getSurfaceMember(); 
 		for (SurfaceProperty surfaceMemberElement : surfaceMember){
-			PolygonImpl polygonImpl = (PolygonImpl)surfaceMemberElement.getSurface();
-			if (polygonImpl == null){ 
-				polygonId  = (surfaceMemberElement.getHref()).substring(1);
+			Polygon polygon = (Polygon)surfaceMemberElement.getSurface();
+			if (polygon == null){ 
+				vpolygonId  = (surfaceMemberElement.getHref()).substring(1);
 				element = new VReferedElement(surfaceMemberElement, lod);
-				element.search(polygonId);
-				polygonImpl = element.getPolygonImpl();
+				element.search(vpolygonId);
+				polygon = element.getPolygon();
 			}
 			else{
-				polygonId = polygonImpl.getId();
-				if (polygonId == null){
-					polygonId = NO_ID_INDICATOR;
+				vpolygonId = polygon.getId();
+				if (vpolygonId == null){
+					vpolygonId = NO_ID_INDICATOR;
 				}
 			}
-			facet = new VFacet(polygonId);		
-			AbstractRingProperty ringPropertyExt = polygonImpl.getExterior(); 
-			LinearRingImpl linearRingImpl = (LinearRingImpl)ringPropertyExt.getObject();
+			facet = new VFacet(vpolygonId);		
+			AbstractRingProperty ringPropertyExt = polygon.getExterior(); 
+			LinearRing linearRing = (LinearRing)ringPropertyExt.getObject();
 			
 			List<PosOrPointPropertyOrPointRep> pppList = null;
-			if(linearRingImpl.isSetPosOrPointPropertyOrPointRep()){
-				pppList = linearRingImpl.getPosOrPointPropertyOrPointRep();
-				polygon = new VPolygon(unicNodes, pppList);
-				facet.addPolygon(polygon);
+			if(linearRing.isSetPosOrPointPropertyOrPointRep()){
+				pppList = linearRing.getPosOrPointPropertyOrPointRep();
+				vpolygon = new VPolygon(unicNodes, pppList);
+				facet.addPolygon(vpolygon);
 			}
 			
 			DirectPositionList posList= null;
-			if(linearRingImpl.isSetPosList()){
-				posList = linearRingImpl.getPosList();
-				polygon = new VPolygon(unicNodes, posList);
-				facet.addPolygon(polygon);
+			if(linearRing.isSetPosList()){
+				posList = linearRing.getPosList();
+				vpolygon = new VPolygon(unicNodes, posList);
+				facet.addPolygon(vpolygon);
 			}
 			
-			List<AbstractRingProperty> listAbstractRingProperty = polygonImpl.getInterior();
+			List<AbstractRingProperty> listAbstractRingProperty = polygon.getInterior();
 			for (AbstractRingProperty ringPropertyInt : listAbstractRingProperty){
 				if(ringPropertyInt != null){
-					linearRingImpl = (LinearRingImpl)ringPropertyInt.getObject();
-					pppList = linearRingImpl.getPosOrPointPropertyOrPointRep();
-					polygon = new VPolygon(unicNodes, pppList);
-					facet.addPolygon(polygon);
+					linearRing = (LinearRing)ringPropertyInt.getObject();
+					pppList = linearRing.getPosOrPointPropertyOrPointRep();
+					vpolygon = new VPolygon(unicNodes, pppList);
+					facet.addPolygon(vpolygon);
 					makeHolePoint();
 				}
 			}	

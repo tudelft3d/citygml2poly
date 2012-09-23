@@ -2,23 +2,19 @@
 
 import java.util.List;
 
-import org.citygml4j.impl.citygml.building.BuildingImpl;
-import org.citygml4j.impl.citygml.building.BuildingPartImpl;
-import org.citygml4j.impl.gml.geometry.primitives.LinearRingImpl;
-import org.citygml4j.impl.gml.geometry.primitives.PolygonImpl;
-import org.citygml4j.impl.gml.geometry.primitives.SolidImpl;
-import org.citygml4j.impl.gml.geometry.primitives.SolidPropertyImpl;
-import org.citygml4j.impl.gml.geometry.primitives.SurfacePropertyImpl;
+
 import org.citygml4j.model.citygml.building.AbstractBoundarySurface;
-import org.citygml4j.model.citygml.building.AbstractBuilding;
 import org.citygml4j.model.citygml.building.BoundarySurfaceProperty;
+import org.citygml4j.model.citygml.building.Building;
+import org.citygml4j.model.citygml.building.BuildingPart;
 import org.citygml4j.model.gml.geometry.aggregates.MultiSurface;
 import org.citygml4j.model.gml.geometry.aggregates.MultiSurfaceProperty;
-import org.citygml4j.model.gml.geometry.primitives.AbstractRingProperty;
-import org.citygml4j.model.gml.geometry.primitives.DirectPositionList;
+import org.citygml4j.model.gml.geometry.complexes.CompositeSurface;
+import org.citygml4j.model.gml.geometry.primitives.Polygon;
+import org.citygml4j.model.gml.geometry.primitives.Solid;
+import org.citygml4j.model.gml.geometry.primitives.SolidProperty;
 import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
-import org.citygml4j.impl.gml.geometry.aggregates.MultiSurfaceImpl;
-import org.citygml4j.impl.gml.geometry.complexes.*;
+
 
 /** 
  * THis class is not using presently, as now the Solid geometry is not checked directly with reference to the MultiSurface
@@ -29,7 +25,7 @@ import org.citygml4j.impl.gml.geometry.complexes.*;
  */
 public class VReferedElement {
 	private SurfaceProperty surfaceMemberElement;
-	PolygonImpl polygonImpl;
+	Polygon polygon;
 	List<BoundarySurfaceProperty> listSurfaceProperty;
 	private int lod;
 	
@@ -39,23 +35,23 @@ public class VReferedElement {
 	}
 	
 	public void search(String polygonId){
-		CompositeSurfaceImpl compositeSurfaceImpl = (CompositeSurfaceImpl)surfaceMemberElement.getParent();// These four lines need to be
+		CompositeSurface compositeSurface = (CompositeSurface)surfaceMemberElement.getParent();// These four lines need to be
 
-		SurfacePropertyImpl surfacePropertyImpl = (SurfacePropertyImpl)compositeSurfaceImpl.getParent();// made also for refered multisurface object
+		SurfaceProperty surfaceProperty = (SurfaceProperty)compositeSurface.getParent();// made also for refered multisurface object
 
-		SolidImpl solidImpl = (SolidImpl)surfacePropertyImpl.getParent();								// made also for refered multisurface object
+		Solid solid = (Solid)surfaceProperty.getParent();								// made also for refered multisurface object
 
-		SolidPropertyImpl solidPropertyImpl = (SolidPropertyImpl)solidImpl.getParent();					// made also for refered multisurface object
+		SolidProperty solidProperty = (SolidProperty)solid.getParent();					// made also for refered multisurface object
 		
 		
 		// test if polygonId is searched within Building or BuildingPart instance
-		if((solidPropertyImpl.getParent()) instanceof BuildingPartImpl){
-			BuildingPartImpl buildingPartImpl = (BuildingPartImpl)solidPropertyImpl.getParent();
-			listSurfaceProperty = buildingPartImpl.getBoundedBySurface();
+		if((solidProperty.getParent()) instanceof BuildingPart){
+			BuildingPart buildingPart = (BuildingPart)solidProperty.getParent();
+			listSurfaceProperty = buildingPart.getBoundedBySurface();
 		}
-		if((solidPropertyImpl.getParent()) instanceof BuildingImpl){
-			BuildingImpl buildingImpl = (BuildingImpl)solidPropertyImpl.getParent();
-			listSurfaceProperty = buildingImpl.getBoundedBySurface();
+		if((solidProperty.getParent()) instanceof Building){
+			Building building = (Building)solidProperty.getParent();
+			listSurfaceProperty = building.getBoundedBySurface();
 		}
 		for(BoundarySurfaceProperty boundarySurfaceProperty : listSurfaceProperty){
 			AbstractBoundarySurface abstractBoundarySurface = boundarySurfaceProperty.getObject();
@@ -73,16 +69,16 @@ public class VReferedElement {
 			List<SurfaceProperty> surfaceMember = multiSurface.getSurfaceMember();
 			int i=0;
 			for (SurfaceProperty surfaceMemberElement : surfaceMember){
-				PolygonImpl polygonImpl = (PolygonImpl)surfaceMemberElement.getSurface();
-				if((polygonImpl.getId()).equals(polygonId)){
-					this.polygonImpl = polygonImpl;
+				Polygon polygon = (Polygon)surfaceMemberElement.getSurface();
+				if((polygon.getId()).equals(polygonId)){
+					this.polygon = polygon;
 					i++;
 				}
 			}
 		}
 	}
 	
-	public PolygonImpl getPolygonImpl(){
-		return polygonImpl;
+	public Polygon getPolygon(){
+		return polygon;
 	}
 }

@@ -2,15 +2,14 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import org.citygml4j.impl.gml.geometry.aggregates.MultiSurfaceImpl;
-import org.citygml4j.impl.gml.geometry.primitives.LinearRingImpl;
-import org.citygml4j.impl.gml.geometry.primitives.PolygonImpl;
 import org.citygml4j.model.citygml.building.AbstractBoundarySurface;
 import org.citygml4j.model.citygml.building.BoundarySurfaceProperty;
 import org.citygml4j.model.gml.geometry.aggregates.MultiSurface;
 import org.citygml4j.model.gml.geometry.aggregates.MultiSurfaceProperty;
 import org.citygml4j.model.gml.geometry.primitives.AbstractRingProperty;
 import org.citygml4j.model.gml.geometry.primitives.DirectPositionList;
+import org.citygml4j.model.gml.geometry.primitives.LinearRing;
+import org.citygml4j.model.gml.geometry.primitives.Polygon;
 import org.citygml4j.model.gml.geometry.primitives.PosOrPointPropertyOrPointRep;
 import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
 
@@ -27,7 +26,7 @@ public class VMultiSurface{
 	private ArrayList<VFacet> facets = new ArrayList<VFacet>();
 	private VUnicNodes unicNodes;
 	private VFacet facet;
-	private VPolygon polygon;
+	private VPolygon vpolygon;
 	private VReferedElement element;
 	private String polygonId;
 	private String multiSurfaceGmlId;
@@ -75,8 +74,8 @@ public class VMultiSurface{
 			
 	public void organize(MultiSurfaceProperty multiSurfaceProperty){
 		if(multiSurfaceProperty.isSetMultiSurface()){
-			MultiSurfaceImpl multiSurfaceImpl = (MultiSurfaceImpl)multiSurfaceProperty.getObject();
-			multiSurfaceGmlId = multiSurfaceImpl.getId();
+			MultiSurface multiSurface = (MultiSurface)multiSurfaceProperty.getObject();
+			multiSurfaceGmlId = multiSurface.getId();
 			if (multiSurfaceGmlId == null){
 				multiSurfaceGmlId = NO_ID_INDICATOR;
 			}
@@ -84,35 +83,35 @@ public class VMultiSurface{
 		MultiSurface multiSurface = multiSurfaceProperty.getMultiSurface();
 		List<SurfaceProperty> surfaceMember = multiSurface.getSurfaceMember();
 		for (SurfaceProperty surfaceMemberElement : surfaceMember){ 	
-			PolygonImpl polygonImpl = (PolygonImpl)surfaceMemberElement.getSurface();
-			if (polygonImpl == null){ 
+			Polygon polygon = (Polygon)surfaceMemberElement.getSurface();
+			if (polygon == null){ 
 				polygonId  = (surfaceMemberElement.getHref()).substring(1);
 				element = new VReferedElement(surfaceMemberElement, lod);
 				element.search(polygonId);
-				polygonImpl = element.getPolygonImpl();
+				polygon = element.getPolygon();
 			}
 			else{
-				polygonId = polygonImpl.getId();
+				polygonId = polygon.getId();
 				if (polygonId == null){
 					polygonId = NO_ID_INDICATOR;
 				}
 			}
 			facet = new VFacet(polygonId);
-			AbstractRingProperty abstractRingProperty = polygonImpl.getExterior();
-			LinearRingImpl linearRingImpl = (LinearRingImpl)abstractRingProperty.getRing();
+			AbstractRingProperty abstractRingProperty = polygon.getExterior();
+			LinearRing linearRing = (LinearRing)abstractRingProperty.getRing();
 			
 			List<PosOrPointPropertyOrPointRep> pppList = null;
-			if(linearRingImpl.isSetPosOrPointPropertyOrPointRep()){
-				pppList = linearRingImpl.getPosOrPointPropertyOrPointRep();
-				polygon = new VPolygon(unicNodes, pppList);
-				facet.addPolygon(polygon);
+			if(linearRing.isSetPosOrPointPropertyOrPointRep()){
+				pppList = linearRing.getPosOrPointPropertyOrPointRep();
+				vpolygon = new VPolygon(unicNodes, pppList);
+				facet.addPolygon(vpolygon);
 			}
 			
 			DirectPositionList posList = null;
-			if(linearRingImpl.isSetPosList()){
-				posList = linearRingImpl.getPosList();
-				polygon = new VPolygon(unicNodes, posList);
-				facet.addPolygon(polygon);
+			if(linearRing.isSetPosList()){
+				posList = linearRing.getPosList();
+				vpolygon = new VPolygon(unicNodes, posList);
+				facet.addPolygon(vpolygon);
 			}
 			facets.add(facet);
 		}

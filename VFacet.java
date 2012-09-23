@@ -9,7 +9,7 @@ public class VFacet {
 	/**
 	 * The first polygon in polygons is the exterior, the others are interior.
 	 */
-	private ArrayList<VPolygon> polygons = new ArrayList<VPolygon>(); 
+	private ArrayList<VPolygon> vpolygons = new ArrayList<VPolygon>(); 
 	/**
 	 * Hole points occur when a facet has one or more interior rings, i.e. holes,
 	 * Hole point for the time being fixed on 0.5 0.5 0.5.
@@ -21,7 +21,7 @@ public class VFacet {
 	}
 	
 	public void addPolygon(VPolygon polygon){
-		polygons.add(polygon);
+		vpolygons.add(polygon);
 	}
 	
 	public void addHolePoint(VNode holePoint){
@@ -35,10 +35,10 @@ public class VFacet {
 	public String toString(){
 		String lineSeparator = System.getProperty ( "line.separator" );
 		String str = "";
-		str = str + polygons.size()+ " " + holePoints.size()+ " # " + polygonId + lineSeparator;
+		str = str + vpolygons.size()+ " " + holePoints.size()+ " # " + polygonId + lineSeparator;
 		
-		for (VPolygon polygon : polygons){
-			str = str + polygon.toString();
+		for (VPolygon vpolygon : vpolygons){
+			str = str + vpolygon.toString();
 		}
 		int holeNr = 0;
 		for (VNode holePoint : holePoints){

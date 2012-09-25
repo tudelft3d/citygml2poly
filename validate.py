@@ -70,7 +70,7 @@ class TkFileDialogExample(Tkinter.Frame):
 
 
 def dothework(filename):
-# 1. create and/or clear the tmp folder
+# # 1. create and/or clear the tmp folder
   if not os.path.exists("tmp"):
     os.mkdir("tmp")
   else:
@@ -84,8 +84,6 @@ def dothework(filename):
   subprocess.call(cmd, shell=True)
   print "Done"
   # print "Number of solids in file:", len(glob.glob('tmp/*.poly'))
-
-  # print "doei doei"
   # sys.exit()
   
 # 3. validate each building/shell

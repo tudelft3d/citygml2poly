@@ -308,7 +308,7 @@ def dothework(filename):
     
   #add x3d materials in the app:appearance according to the counted errors
   for errID in exampleerrors:
-        print errID
+        #print errID
         #add each color
         ErrorMat = MyXML.SubElement(ErrorApp, '{http://www.opengis.net/citygml/appearance/1.0}X3DMaterial')
         ErrorMat.set ('errorID', errID)
@@ -331,7 +331,7 @@ def dothework(filename):
 
         #traverse all the solids in the fREPORT
         for Solid in ReportXMLRoot.findall('.//Solid'):
-            print Solid.find('id').text
+            #print Solid.find('id').text
             bNolocation = False #True indicates errors are unlocatable
             for ValidatorMessage in Solid.findall('ValidatorMessage'):
                 ErrorCode = 'NULL'
@@ -372,6 +372,7 @@ def dothework(filename):
 
   #go back to the src folder
   os.chdir(os.path.split(os.path.realpath(sys.argv[0]))[0])
+  print ("Finished!")
 
 if __name__ == '__main__':
   if len(sys.argv) < 2:

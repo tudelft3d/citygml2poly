@@ -11,7 +11,7 @@ public class VNode {
 	 * The snapMargin determines how close ordinate values of two nodes must be for 
 	 * the nodes to considered as one single node.
 	 */
-	private double snapMargin = 0.001;
+	private double snapMargin = 1e-8;
 	
 	/**
 	 * constructs an instance of VNode with the ordinate values given

@@ -67,12 +67,10 @@ public class VReferedElement {
 			}
 			MultiSurface multiSurface = multiSurfaceProperty.getMultiSurface();
 			List<SurfaceProperty> surfaceMember = multiSurface.getSurfaceMember();
-			int i=0;
 			for (SurfaceProperty surfaceMemberElement : surfaceMember){
 				Polygon polygon = (Polygon)surfaceMemberElement.getSurface();
 				if((polygon.getId()).equals(polygonId)){
 					this.polygon = polygon;
-					i++;
 				}
 			}
 		}

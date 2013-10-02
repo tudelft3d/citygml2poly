@@ -19,6 +19,7 @@ public class VUnicNodes {
 		for( VNode n : nodes){
 			if( n.equals(node)){
 				notPresent = false;
+				break;
 			}
 		}
 		if (notPresent){
@@ -36,6 +37,7 @@ public class VUnicNodes {
 		for(VNode n : nodes){
 			if (n.equals(node)){
 				indexValue = i;
+				break;
 			}
 			i++;
 		}

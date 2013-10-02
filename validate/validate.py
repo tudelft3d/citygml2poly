@@ -111,7 +111,7 @@ class TkFileDialogExample(Tkinter.Frame):
 3D VALIDATOR FOR CITYGML MODELS
 
 -Version-
-    V1.0.1beta
+    V1.0.2beta
 
 -Description-
     This is a tool for validating geometry of CityGML models.
@@ -152,32 +152,36 @@ class TkFileDialogExample(Tkinter.Frame):
     430: 'INTERIOR_OF_SHELL_NOT_CONNECTED',
 
   repair_shape_.xml 
-    provides a visualizable results of errors found in the input model.
+    provides a visible results of errors found in the input model.
     Its appearance theme is "Materials for Errors"
 
     ''')
 
 def dothework(filename):
+
+  curr_filepath = os.path.dirname(os.path.realpath(__file__))
+  input_filepath, tmpname = os.path.split(filename)
+  
 # 0. define the output path
+  tmpfolder = os.path.join(input_filepath, tmpname + '_tmp')
   fREPORT = 'report_' + os.path.splitext(os.path.basename(filename))[0] + '.xml'
   fREPORT_SHAPE = 'report_shape_' + os.path.splitext(os.path.basename(filename))[0] + '.xml'
     
 # 1. create and/or clear the tmp folder
-  if not os.path.exists("tmp"):
-    os.mkdir("tmp")
+  if not os.path.exists(tmpfolder):
+    os.mkdir(tmpfolder)
   else:
-    shutil.rmtree("tmp")
-    os.mkdir("tmp")
+    shutil.rmtree(tmpfolder)
+    os.mkdir(tmpfolder)
 
 # 2. create and/or clear the tmp folder
   print "Processing file:", filename
   print "Parsing the file..."
-  #cmd = "./run.sh " + filename + " tmp" modifed to run in windows
-  cmd = ".\\run.bat " + filename + " tmp"
+  cmd = os.path.join(curr_filepath, "run.bat " + filename + ' ' + tmpfolder)
   subprocess.call(cmd, shell=True)
   
 # 3. validate each building/shell
-  os.chdir('tmp')
+  os.chdir(tmpfolder)
   dFiles = {}
   for f in os.listdir('.'):
     if f[-4:] == 'poly':
@@ -189,7 +193,7 @@ def dothework(filename):
         dFiles[f1].append(f)
  # val3dity =   '/Users/hugo/Library/Developer/Xcode/DerivedData/val3dity-btcvseqwbnkwbueknlulczqmjyqt/Build/Products/Debug/val3dity'
   #modifed to the right folder
-  val3dity = '..\\3DValidation\\3DValidation.exe'
+  val3dpath = os.path.join(curr_filepath, r'3DValidation\3DValidation.exe')
   i = 0
   print "Number of solids in file:", len(dFiles)
   invalidsolids = 0
@@ -206,7 +210,7 @@ def dothework(filename):
     t.close()
     
     # validate with val3dity
-    str1 = val3dity + " -withids -xml " +  " ".join(dFiles[solidname])
+    str1 = val3dpath + " -withids -xml " +  " ".join(dFiles[solidname])
     op = subprocess.Popen(str1.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     R = op.poll()
     if R:
@@ -257,7 +261,7 @@ def dothework(filename):
 
 # 4. do not wipe the tmp folder
 #  os.chdir('../')
-#  shutil.rmtree('tmp')
+  shutil.rmtree(tmpfolder)
 
 # 5. open textmate
   # os.system("mate " + fREPORT)
@@ -372,7 +376,7 @@ def dothework(filename):
 
   #go back to the src folder
   os.chdir(os.path.split(os.path.realpath(sys.argv[0]))[0])
-  print ("Finished!")
+  print('Finished!')
 
 if __name__ == '__main__':
   if len(sys.argv) < 2:
@@ -380,7 +384,7 @@ if __name__ == '__main__':
     sys.exit()
   if sys.argv[1] == '-gui':
     root = Tkinter.Tk()
-    root.wm_title("val3dity -- validation of 3D solids v1.0.1beta")
+    root.wm_title("val3dity -- validation of 3D solids v1.0.2beta")
     root.geometry('400x100')
     TkFileDialogExample(root).pack()#, width=200, height=100).pack()
     root.mainloop()

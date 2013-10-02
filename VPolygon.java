@@ -36,20 +36,17 @@ public class VPolygon {
 	 */
 	public VPolygon(VUnicNodes unicNodes, List<PosOrPointPropertyOrPointRep> pppList){
 		this.unicNodes = unicNodes;
-		VNode node = new VNode();
-		int nodeNr = 0;
 		for (PosOrPointPropertyOrPointRep pppElement : pppList ){
 			DirectPosition directPosition = pppElement.getPos();
 			List<Double> ordinates = directPosition.getValue();
-			int index = 0;
+			VNode node = new VNode(ordinates.get(0), ordinates.get(1), ordinates.get(2));
+			/*int index = 0;
 			for(Double ordinate : ordinates){
 				node.addOrdinate(index, ordinate);
 				index++;			
-			}
-			nodeNr++;
+			}*/
 			this.addNode(node);
 			unicNodes.addUnicNode(node);
-			node = new VNode();
 		}
 		convertNodesToIndices();
 	}
@@ -62,11 +59,11 @@ public class VPolygon {
 	 */
 	public VPolygon(VUnicNodes unicNodes, DirectPositionList posList){
 		this.unicNodes = unicNodes;
-		VNode node = new VNode();
-		int index = 0;
-		int nodeNr = 0;
 		List<Double> ordinates = posList.getValue();
-		for (Double ordinate : ordinates){
+		VNode node = new VNode(ordinates.get(0), ordinates.get(1), ordinates.get(2));
+		this.addNode(node);
+		unicNodes.addUnicNode(node);
+		/*for (Double ordinate : ordinates){
 			node.addOrdinate(index, ordinate);
 			index++;
 			if ( index == 3){
@@ -75,9 +72,8 @@ public class VPolygon {
 				unicNodes.addUnicNode(node);
 				node = new VNode();
 			}
-		}
+		}*/
 		convertNodesToIndices();
-		nodeNr++;
 	}
 	
 	/**
@@ -89,6 +85,7 @@ public class VPolygon {
 		for(VNode nd : nodes){
 			if(nd.equals(node)){
 				present = true;
+				break;
 			}
 		}
 		if(!present){
@@ -126,6 +123,7 @@ public class VPolygon {
 			for (VNode unicNode: unicNodes.getUnicNodes()){
 				if (polygonNode.equals(unicNode)){
 					this.addIndex(unicNodes.getIndex(unicNode));
+					break;
 				}
 			}
 		}

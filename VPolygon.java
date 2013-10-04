@@ -59,11 +59,10 @@ public class VPolygon {
 	 */
 	public VPolygon(VUnicNodes unicNodes, DirectPositionList posList){
 		this.unicNodes = unicNodes;
+		VNode node = new VNode();
+		int index = 0;
 		List<Double> ordinates = posList.getValue();
-		VNode node = new VNode(ordinates.get(0), ordinates.get(1), ordinates.get(2));
-		this.addNode(node);
-		unicNodes.addUnicNode(node);
-		/*for (Double ordinate : ordinates){
+		for (Double ordinate : ordinates){
 			node.addOrdinate(index, ordinate);
 			index++;
 			if ( index == 3){
@@ -72,7 +71,7 @@ public class VPolygon {
 				unicNodes.addUnicNode(node);
 				node = new VNode();
 			}
-		}*/
+		}
 		convertNodesToIndices();
 	}
 	

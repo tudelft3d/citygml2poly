@@ -39,13 +39,14 @@ import org.citygml4j.model.citygml.building.Building;
  */
 public class VReaderWriter {
 	private static final String NO_ID_INDICATOR = "-1";
-	private String destinationName;
+	private String destinationName = null;
 	private VInputFile input;
 	private VOutputFile output;
 	private File sourceFile;
 	private File destinationFolder;
 	private int shellNr = 1; // counter to generate number for file name when there is no id
 	private int buildingNr = 1;
+	private boolean is_OutSemantics = false;
 	
 	public VReaderWriter(File sourceFile, File destinationFolder){
 		this.sourceFile = sourceFile;
@@ -58,6 +59,7 @@ public class VReaderWriter {
 		ArrayList<Building> buildingList = input.readAllBuildings();	
 		for (Building building : buildingList){
 			VConstruct<Building> construct = new VConstruct<Building>();
+			construct.SetIsSemantics(this.is_OutSemantics);
 			construct.store(building);
 			construct.setShellDataStore(shellDataStore);
 			construct.organize();
@@ -77,6 +79,10 @@ public class VReaderWriter {
 			buildingNr++;
 			shellDataStore.clear();
 		}
+	}
+	
+	public void setOutputSemantics(boolean set){
+		this.is_OutSemantics = set;
 	}
 	
 	public int getNumberOfShells(){

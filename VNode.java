@@ -31,8 +31,12 @@ public class VNode {
 		node[index] = ordinate;
 	}
 	
-	private Double getOrdinate(int index){
+	public Double getOrdinate(int index){
 		return this.node[index];
+	}
+	
+	public Double getSnapMargin(){
+		return this.snapMargin;
 	}
 	
 	/**
@@ -41,14 +45,18 @@ public class VNode {
 	 * @param node: the other node
 	 * @return true if equal, otherwise false
 	 */
-	public boolean equals(VNode node){
-	    if(    (this.node[0] > (node.getOrdinate(0) - snapMargin) && this.node[0] <= (node.getOrdinate(0) + snapMargin))
-			&& (this.node[1] > (node.getOrdinate(1) - snapMargin) && this.node[1] <= (node.getOrdinate(1) + snapMargin))
-			&& (this.node[2] > (node.getOrdinate(2) - snapMargin) && this.node[2] <= (node.getOrdinate(2) + snapMargin))  ){
+	public boolean equals(Object node){
+	    if(    (this.node[0] > (((VNode) node).getOrdinate(0) - snapMargin) && this.node[0] <= (((VNode)node).getOrdinate(0) + snapMargin))
+			&& (this.node[1] > (((VNode) node).getOrdinate(1) - snapMargin) && this.node[1] <= (((VNode)node).getOrdinate(1) + snapMargin))
+			&& (this.node[2] > (((VNode) node).getOrdinate(2) - snapMargin) && this.node[2] <= (((VNode)node).getOrdinate(2) + snapMargin))  ){
 			return true;}
 		else{
 			return false;
 	    }
+	}
+	//for the map datastructure
+	public int hashCode(){
+		return (int)(this.node[0] + this.node[1] + this.node[2]); 
 	}
 	/**
 	 * Delivers the ordinates concatenated in one string as component in the poly file content.

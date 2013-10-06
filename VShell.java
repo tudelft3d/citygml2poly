@@ -2,6 +2,7 @@
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.citygml4j.model.gml.geometry.complexes.CompositeSurface;
 import org.citygml4j.model.gml.geometry.primitives.AbstractRingProperty;
@@ -23,9 +24,10 @@ public class VShell {
 	private VFacet facet;
 	private VPolygon vpolygon;
 	private VReferedElement element;
-	private String vpolygonId;
-	private String compositeSurfaceGmlId;
-	private int lod;
+	private String vpolygonId = null;
+	private String polygonCode = null;
+	private String compositeSurfaceGmlId = null;
+	private int lod = -1;
 	
 	public VShell(VUnicNodes unicNodes, int lod){
 		this.unicNodes = unicNodes;
@@ -41,7 +43,7 @@ public class VShell {
 		List<SurfaceProperty> surfaceMember = compositeSurface.getSurfaceMember(); 
 		for (SurfaceProperty surfaceMemberElement : surfaceMember){
 			Polygon polygon = (Polygon)surfaceMemberElement.getSurface();
-			if (polygon == null){ 
+			if (polygon == null){
 				vpolygonId  = (surfaceMemberElement.getHref()).substring(1);
 				element = new VReferedElement(surfaceMemberElement, lod);
 				element.search(vpolygonId);
@@ -53,7 +55,7 @@ public class VShell {
 					vpolygonId = NO_ID_INDICATOR;
 				}
 			}
-			facet = new VFacet(vpolygonId);		
+			facet = new VFacet(vpolygonId, polygonCode);
 			AbstractRingProperty ringPropertyExt = polygon.getExterior(); 
 			LinearRing linearRing = (LinearRing)ringPropertyExt.getObject();
 			
@@ -62,6 +64,7 @@ public class VShell {
 				pppList = linearRing.getPosOrPointPropertyOrPointRep();
 				vpolygon = new VPolygon(unicNodes, pppList);
 				facet.addPolygon(vpolygon);
+				vpolygon.clearNodes();
 			}
 			
 			DirectPositionList posList= null;
@@ -69,16 +72,29 @@ public class VShell {
 				posList = linearRing.getPosList();
 				vpolygon = new VPolygon(unicNodes, posList);
 				facet.addPolygon(vpolygon);
+				vpolygon.clearNodes();
 			}
 			
 			List<AbstractRingProperty> listAbstractRingProperty = polygon.getInterior();
 			for (AbstractRingProperty ringPropertyInt : listAbstractRingProperty){
 				if(ringPropertyInt != null){
 					linearRing = (LinearRing)ringPropertyInt.getObject();
-					pppList = linearRing.getPosOrPointPropertyOrPointRep();
+					if(linearRing.isSetPosOrPointPropertyOrPointRep()){
+						pppList = linearRing.getPosOrPointPropertyOrPointRep();
+						vpolygon = new VPolygon(unicNodes, pppList);
+						facet.addPolygon(vpolygon);
+					}
+					if(linearRing.isSetPosList()){
+						posList = linearRing.getPosList();
+						vpolygon = new VPolygon(unicNodes, posList);
+						facet.addPolygon(vpolygon);
+					}
+					facet.addHolePoint(vpolygon.getHolePoint());
+					vpolygon.clearNodes();
+					/*pppList = linearRing.getPosOrPointPropertyOrPointRep();
 					vpolygon = new VPolygon(unicNodes, pppList);
 					facet.addPolygon(vpolygon);
-					makeHolePoint();
+					makeHolePoint();*/
 				}
 			}	
 			facets.add(facet);
@@ -88,10 +104,10 @@ public class VShell {
 	/**
 	 * As long as we don't have a proper algorithm to calculate, we just give a fixed coordinate.
 	 */
-	private void makeHolePoint(){ 
+	/*private void makeHolePoint(){ 
 		VNode holePoint = new VNode(0.5, 0.5, 0.5);
 		facet.addHolePoint(holePoint);
-	}
+	}*/
 	/**
 	 * Concatenates all the parts of underlying objects to one poly file string.
 	 */
@@ -105,8 +121,12 @@ public class VShell {
 		str = str + unicNodes.getSize() + "  " + "3" + " " + "0" + " " + "0" + lineSeparator;
 		//# Node index, node ordinates
 		int i = 0;
-		for (VNode node : unicNodes.getUnicNodes()){
+		/*for (VNode node : unicNodes.getUnicNodes()){
 			str = str + i + "  " + node.toString() + lineSeparator;
+			i++;
+		}*/
+		for (Entry<VNode, Integer> node : unicNodes.getUnicNodes().entrySet()){
+			str = str + i + "  " + node.getKey().toString() + lineSeparator;
 			i++;
 		}
 		//# Part 2 - facet list

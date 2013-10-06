@@ -1,6 +1,9 @@
 
+import java.util.LinkedHashMap;
+//import java.util.ArrayList;
+import java.util.Map.Entry;
 
-import java.util.ArrayList;
+
 
 /**
  * Is responsible for list of unique nodes that carry a facet (=planar surface
@@ -8,14 +11,18 @@ import java.util.ArrayList;
  * @author kooijmanj1
  */
 public class VUnicNodes {
-	private ArrayList<VNode> nodes = new ArrayList<VNode>();
+	private LinkedHashMap<VNode, Integer> nodes = new LinkedHashMap<VNode, Integer>();
+	//private ArrayList<VNode> nodes = new ArrayList<VNode>();
 	
 	/**
 	 * Adds node only if not present yet in list of unique nodes
 	 * @param node
 	 */
 	public void addUnicNode(VNode node){
-		boolean notPresent = true;
+		if (!this.nodes.containsKey(node)){
+			this.nodes.put(node, this.nodes.size());
+		}
+		/*boolean notPresent = true;
 		for( VNode n : nodes){
 			if( n.equals(node)){
 				notPresent = false;
@@ -24,7 +31,7 @@ public class VUnicNodes {
 		}
 		if (notPresent){
 			nodes.add(node);
-		}
+		}*/
 	}
 	
 	/**
@@ -32,6 +39,8 @@ public class VUnicNodes {
 	 * @return the index of node in unicNodes
 	 */
 	public int getIndex(VNode node){
+		return nodes.get(node);
+		/*
 		int indexValue = 999999; 
 		int i = 0;
 		for(VNode n : nodes){
@@ -41,12 +50,16 @@ public class VUnicNodes {
 			}
 			i++;
 		}
-		return indexValue;
+		return indexValue;*/
 	}
 	
-	public ArrayList<VNode> getUnicNodes(){
+	public LinkedHashMap<VNode, Integer> getUnicNodes(){
 		return nodes;
 	}
+	/*
+	public ArrayList<VNode> getUnicNodes(){
+		return nodes;
+	}*/
 	
 	public int getSize(){
 		return nodes.size();
@@ -59,8 +72,11 @@ public class VUnicNodes {
 	public String toString(){
 		String lineSeparator = System.getProperty ( "line.separator" );
 		String str = "";
-		for (VNode node : nodes){
+		/*for (VNode node : nodes){
 			str = str + " " + (nodes.indexOf(node)+1) + " " + node.toString() + lineSeparator;
+		}*/
+		for (Entry<VNode, Integer> node : nodes.entrySet()){
+			str = str + " " + (node.getValue()+1) + " " + node.getKey().toString() + lineSeparator;
 		}
 		return str;
 	}

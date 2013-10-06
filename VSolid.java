@@ -17,12 +17,12 @@ public class VSolid{
 	private String[] shellData = new String[2];
 	private ArrayList<String[]> shellDataArray = new ArrayList<String[]>();
 	private VUnicNodes unicNodes;
-	private int lod;
+	private int lod = -1;
 
 	public VSolid(SolidProperty solidProperty, VUnicNodes unicNodes, int lod){
 		this.solidProperty = solidProperty;
 		this.unicNodes = unicNodes;
-		this.lod =lod;
+		this.lod = lod;
 	}
 	
 	public void organize(){

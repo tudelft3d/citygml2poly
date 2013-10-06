@@ -2,6 +2,7 @@
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.citygml4j.model.gml.geometry.primitives.DirectPosition;
 import org.citygml4j.model.gml.geometry.primitives.DirectPositionList;
@@ -112,6 +113,58 @@ public class VPolygon {
 		return indices;
 	}
 	
+	//get a point inside the polygon using convex corner
+	public VNode getHolePoint(){
+		int xyz = 0;
+		VNode holePoint = new VNode();
+		//avoid the collinear neighbour of the convex corner (possible?)
+		while(xyz < 3)
+		{
+			int index = 0;
+			VNode pt = this.getNode(xyz);
+			for (VNode curNode: this.getNodes()){
+				if (curNode.getOrdinate(xyz) > pt.getOrdinate(xyz)){
+					pt = curNode;
+					index++;
+				}
+			}
+			VNode pt1, pt2;
+			if (index > 0){
+				//not the first node
+				pt1 = this.getNode(index-1);
+			}
+			else{
+				//the first node
+				pt1 = this.getNode(this.getNodes().size()-1);
+			}
+			if (index == this.getNodes().size()-1){
+				//the last node
+				pt2 = this.getNode(0);
+			}
+			else{
+				//not the last node
+				pt2 = this.getNode(index+1);
+			}
+			//the mid point
+			if (Math.abs(pt1.getOrdinate(xyz) - pt.getOrdinate(xyz)) > pt.getSnapMargin() ||
+					Math.abs(pt2.getOrdinate(xyz) - pt.getOrdinate(xyz)) > pt.getSnapMargin()){
+				//not collinear
+				holePoint.addOrdinate(0, (pt1.getOrdinate(0) + pt2.getOrdinate(0))/2);
+				holePoint.addOrdinate(1, (pt1.getOrdinate(1) + pt2.getOrdinate(1))/2);
+				holePoint.addOrdinate(2, (pt1.getOrdinate(2) + pt2.getOrdinate(2))/2);
+				break;
+			}
+			xyz++;
+		}
+		return holePoint;
+	}
+	
+	public void clearNodes(){
+		if (!this.nodes.isEmpty()){
+			this.nodes.clear();
+		}
+	}
+	
 	/**
 	 * 	Derives index values from the polygon nodes by comparing coordinates 
 	 *	between polygon nodes and nodes in the array of unique nodes
@@ -119,12 +172,13 @@ public class VPolygon {
 	 */
 	private void convertNodesToIndices(){
 		for (VNode polygonNode: this.getNodes()){
-			for (VNode unicNode: unicNodes.getUnicNodes()){
+			this.addIndex(unicNodes.getIndex(polygonNode));
+			/*for (VNode unicNode: unicNodes.getUnicNodes()){
 				if (polygonNode.equals(unicNode)){
 					this.addIndex(unicNodes.getIndex(unicNode));
 					break;
 				}
-			}
+			}*/
 		}
 	}
 	

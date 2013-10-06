@@ -5,7 +5,9 @@ import java.util.ArrayList;
  * @author kooijmanj1
  */
 public class VFacet {
-	private String polygonId;
+	private String polygonId = null;
+	private String polygonCode = null;//extension of the code name of the facet
+	private boolean is_Semantics = false;
 	/**
 	 * The first polygon in polygons is the exterior, the others are interior.
 	 */
@@ -16,8 +18,9 @@ public class VFacet {
 	 */
 	private ArrayList<VNode> holePoints = new ArrayList<VNode>();
 	
-	public VFacet(String polygonId){
+	public VFacet(String polygonId, String polygonCode){
 		this.polygonId = polygonId;
+		this.polygonCode = polygonCode;
 	}
 	
 	public void addPolygon(VPolygon polygon){
@@ -28,6 +31,9 @@ public class VFacet {
 		holePoints.add(holePoint);
 	}
 	
+	public void setIsSemantics(boolean set){
+		this.is_Semantics = set;
+	}
 	/** 
 	 * Concatenates number of polygons in facet with number of holePoints and polygonId and
 	 * subsequently all polygons and holepoints.
@@ -35,11 +41,38 @@ public class VFacet {
 	public String toString(){
 		String lineSeparator = System.getProperty ( "line.separator" );
 		String str = "";
-		str = str + vpolygons.size()+ " " + holePoints.size()+ " # " + polygonId + lineSeparator;
+		if (polygonCode == null || is_Semantics == false)
+			str = str + vpolygons.size()+ " " + holePoints.size()+ " # " + polygonId + lineSeparator;
+		else
+			str = str + vpolygons.size()+ " " + holePoints.size()+ " # " + polygonId + " # "+ polygonCode + lineSeparator;
+		
+		/*if (holePoints.size() > 0){
+			str = str + vpolygons.get(0).toString();
+			for (int i = 1; i < vpolygons.size(); ++i){
+				str = str + vpolygons.get(i).toString();
+				
+			}
+			for (VPolygon vpolygon : vpolygons){
+				str = str + vpolygon.toString();
+				vpolygons.get(0).toString()
+			}
+			int holeNr = 0;
+			for (VNode holePoint : holePoints){
+				str = str + holeNr + " ";
+				str = str + holePoint.toString() + lineSeparator;
+				holeNr++;
+			}
+		}
+		else{
+			for (VPolygon vpolygon : vpolygons){
+				str = str + vpolygon.toString();
+			}
+		}*/
 		
 		for (VPolygon vpolygon : vpolygons){
 			str = str + vpolygon.toString();
 		}
+		
 		int holeNr = 0;
 		for (VNode holePoint : holePoints){
 			str = str + holeNr + " ";

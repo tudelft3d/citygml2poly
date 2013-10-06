@@ -1,6 +1,7 @@
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.citygml4j.model.citygml.building.AbstractBoundarySurface;
 import org.citygml4j.model.citygml.building.BoundarySurfaceProperty;
@@ -28,17 +29,23 @@ public class VMultiSurface{
 	private VFacet facet;
 	private VPolygon vpolygon;
 	private VReferedElement element;
-	private String polygonId;
-	private String multiSurfaceGmlId;
+	private String polygonId = null;
+	private String polygonCode  = null;
+	private String multiSurfaceGmlId  = null;
 	private String[] shellData = new String[2];
 	private ArrayList<String[]> shellDataArray = new ArrayList<String[]>();
-	private int lod;
-	private boolean wrapup =false; // noodmaatregel om te voorkomen dat voor elk surface een poly wordt gemaakt
+	private int lod = -1;
+	private boolean wrapup = false; // noodmaatregel om te voorkomen dat voor elk surface een poly wordt gemaakt
 	private boolean boundedBy = false;
+	private boolean is_Semantics = false;
 	
 	public VMultiSurface(VUnicNodes unicNodes, int lod){
 		this.unicNodes = unicNodes;
 		this.lod = lod;
+	}
+	
+	public void SetIsSemantics (boolean set){
+		is_Semantics = set;
 	}
 	
 	public void organize(List<BoundarySurfaceProperty> listBoundarySurfaceProperty){
@@ -48,25 +55,31 @@ public class VMultiSurface{
 		int count = 0;
 		for (BoundarySurfaceProperty boundarySurfaceProperty : listBoundarySurfaceProperty){
 			count++;
-			AbstractBoundarySurface abstractBoundarySurface = boundarySurfaceProperty.getObject();			
-			if (lod == 2){
+			AbstractBoundarySurface abstractBoundarySurface = boundarySurfaceProperty.getObject();
+			//get the type of the facet
+			this.polygonCode = abstractBoundarySurface.getCityGMLClass().name();
+			//
+			//if (lod == 2){
 				if (abstractBoundarySurface.isSetLod2MultiSurface()){
+					this.lod = 2;
 					multiSurfaceProperty = abstractBoundarySurface.getLod2MultiSurface();				
 					this.organize(multiSurfaceProperty);
 				}
-			}			
-			if (lod == 3){
+			//}			
+			//if (lod == 3){
 				if (abstractBoundarySurface.isSetLod3MultiSurface()){
+					this.lod = 3;
 					multiSurfaceProperty = abstractBoundarySurface.getLod3MultiSurface();				
 					this.organize(multiSurfaceProperty);
 				}
-			}
-			if (lod == 4){
+			//}
+			//if (lod == 4){
 				if (abstractBoundarySurface.isSetLod4MultiSurface()){
+					this.lod = 4;
 					multiSurfaceProperty = abstractBoundarySurface.getLod4MultiSurface();				
 					this.organize(multiSurfaceProperty);
 				}
-			}
+			//}
 			wrapup = count == content - 1;
 			
 		}
@@ -96,7 +109,8 @@ public class VMultiSurface{
 					polygonId = NO_ID_INDICATOR;
 				}
 			}
-			facet = new VFacet(polygonId);
+			facet = new VFacet(polygonId, polygonCode);
+			//exterior polygon
 			AbstractRingProperty abstractRingProperty = polygon.getExterior();
 			LinearRing linearRing = (LinearRing)abstractRingProperty.getRing();
 			
@@ -112,15 +126,43 @@ public class VMultiSurface{
 				posList = linearRing.getPosList();
 				vpolygon = new VPolygon(unicNodes, posList);
 				facet.addPolygon(vpolygon);
+				vpolygon.clearNodes();
 			}
+			//Interior polygons
+			List<AbstractRingProperty> abstractIntRingProperties = polygon.getInterior();
+			for (AbstractRingProperty abstractIntRingProperty : abstractIntRingProperties){
+				LinearRing linearIntRing = (LinearRing)abstractIntRingProperty.getRing();
+				List<PosOrPointPropertyOrPointRep> pppIntList = null;
+				if(linearIntRing.isSetPosOrPointPropertyOrPointRep()){
+					pppIntList = linearIntRing.getPosOrPointPropertyOrPointRep();
+					vpolygon = new VPolygon(unicNodes, pppIntList);
+					facet.addPolygon(vpolygon);
+					facet.addHolePoint(vpolygon.getHolePoint());
+					vpolygon.clearNodes();
+				}
+				DirectPositionList posIntList = null;
+				if(linearIntRing.isSetPosList()){
+					posIntList = linearIntRing.getPosList();
+					vpolygon = new VPolygon(unicNodes, posIntList);
+					facet.addPolygon(vpolygon);
+					facet.addHolePoint(vpolygon.getHolePoint());
+					vpolygon.clearNodes();
+				}
+			}
+			
 			facets.add(facet);
 		}
-
-		String multiSurfaceId = multiSurfaceGmlId + EXTERIOR_INDICATOR;
+		if (wrapup || !boundedBy){
+			String multiSurfaceId = multiSurfaceGmlId + EXTERIOR_INDICATOR;
+			shellData[0] = multiSurfaceId;
+			shellData[1] = this.toString();
+			shellDataArray.add(shellData);
+		}
+		/*String multiSurfaceId = multiSurfaceGmlId + EXTERIOR_INDICATOR;
 		shellData[0] = multiSurfaceId;
 		shellData[1] = this.toString();
 		if (wrapup) shellDataArray.add(shellData);
-		if (!boundedBy) shellDataArray.add(shellData);
+		if (!boundedBy) shellDataArray.add(shellData);*/
 	}
 	
 	/**
@@ -136,13 +178,18 @@ public class VMultiSurface{
 		str = str + unicNodes.getSize() + "  " + "3" + " " + "0" + " " + "0" + lineSeparator;
 		//# Node index, node ordinates
 		int i = 0;
-		for (VNode node : unicNodes.getUnicNodes()){
+		/*for (VNode node : unicNodes.getUnicNodes()){
 			str = str + i + "  " + node.toString() + lineSeparator;
+			i++;
+		}*/
+		for (Entry<VNode, Integer> node : unicNodes.getUnicNodes().entrySet()){
+			str = str + i + "  " + node.getKey().toString() + lineSeparator;
 			i++;
 		}
 		//# Part 2 - facet list
 		str = str + facets.size() + " 0" + lineSeparator;
 		for (VFacet facet : facets){
+			facet.setIsSemantics(this.is_Semantics);
 			str = str + facet.toString();	
 		}
 		str = str + "0" + lineSeparator;

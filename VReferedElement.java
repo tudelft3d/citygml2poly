@@ -27,7 +27,7 @@ public class VReferedElement {
 	private SurfaceProperty surfaceMemberElement;
 	Polygon polygon;
 	List<BoundarySurfaceProperty> listSurfaceProperty;
-	private int lod;
+	private int lod = -1;
 	
 	public VReferedElement(SurfaceProperty surfaceMemberElement, int lod){
 		this.surfaceMemberElement = surfaceMemberElement;

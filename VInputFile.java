@@ -45,13 +45,13 @@ public class VInputFile {
 			CityGMLReader reader = in.createCityGMLReader(file);
 			CityGML citygml = reader.nextFeature();
 			CityModel cityModel = (CityModel)citygml;
-			int aantalGebouwen = 0;
+			//int aantalGebouwen = 0;
 			for(CityObjectMember cityObjectMember : cityModel.getCityObjectMember()){
 				AbstractCityObject cityObject = cityObjectMember.getCityObject();
 				if(cityObject.getCityGMLClass() == CityGMLClass.BUILDING){
 					Building building = (Building)cityObject;
 					buildings.add(building);
-					aantalGebouwen++;
+					//aantalGebouwen++;
 				}
 			}		
 		} 

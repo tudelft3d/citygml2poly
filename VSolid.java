@@ -18,6 +18,7 @@ public class VSolid{
 	private ArrayList<String[]> shellDataArray = new ArrayList<String[]>();
 	private VUnicNodes unicNodes;
 	private int lod = -1;
+	private String solidGmlId = null;
 
 	public VSolid(SolidProperty solidProperty, VUnicNodes unicNodes, int lod){
 		this.solidProperty = solidProperty;
@@ -25,11 +26,17 @@ public class VSolid{
 		this.lod = lod;
 	}
 	
+	public void SetId(String str){
+		this.solidGmlId = str;
+	}
+	
 	public void organize(){
 		Solid solid = (Solid)solidProperty.getObject();	
-		String solidGmlId = solid.getId();
 		if (solidGmlId == null){
-			solidGmlId = NO_ID_INDICATOR;
+			solidGmlId = solid.getId();
+			if (solidGmlId == null){
+				solidGmlId = NO_ID_INDICATOR;
+			}
 		}
 		//exterior shell
 		SurfaceProperty exteriorSurfaceProperty = solid.getExterior(); 

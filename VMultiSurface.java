@@ -48,6 +48,10 @@ public class VMultiSurface{
 		is_Semantics = set;
 	}
 	
+	public void SetID(String str){
+		this.multiSurfaceGmlId = str;
+	}
+	
 	public void organize(List<BoundarySurfaceProperty> listBoundarySurfaceProperty){
 		boundedBy = true;
 		MultiSurfaceProperty multiSurfaceProperty = null;
@@ -88,9 +92,11 @@ public class VMultiSurface{
 	public void organize(MultiSurfaceProperty multiSurfaceProperty){
 		if(multiSurfaceProperty.isSetMultiSurface()){
 			MultiSurface multiSurface = (MultiSurface)multiSurfaceProperty.getObject();
-			multiSurfaceGmlId = multiSurface.getId();
 			if (multiSurfaceGmlId == null){
-				multiSurfaceGmlId = NO_ID_INDICATOR;
+				multiSurfaceGmlId = multiSurface.getId();
+				if (multiSurfaceGmlId == null){
+					multiSurfaceGmlId = NO_ID_INDICATOR;
+				}
 			}
 		}
 		MultiSurface multiSurface = multiSurfaceProperty.getMultiSurface();

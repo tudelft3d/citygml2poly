@@ -13,6 +13,8 @@ import org.citygml4j.model.gml.geometry.primitives.LinearRing;
 import org.citygml4j.model.gml.geometry.primitives.Polygon;
 import org.citygml4j.model.gml.geometry.primitives.PosOrPointPropertyOrPointRep;
 import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
+import org.citygml4j.model.citygml.building.OpeningProperty;
+import org.citygml4j.model.citygml.building.AbstractOpening;
 
 /**
  * This class deals with MultiSurface valued geometry property,
@@ -55,6 +57,7 @@ public class VMultiSurface{
 	public void organize(List<BoundarySurfaceProperty> listBoundarySurfaceProperty){
 		boundedBy = true;
 		MultiSurfaceProperty multiSurfaceProperty = null;
+		List<OpeningProperty> listOpeningProperty;
 		int content = listBoundarySurfaceProperty.size();
 		int count = 0;
 		for (BoundarySurfaceProperty boundarySurfaceProperty : listBoundarySurfaceProperty){
@@ -82,6 +85,23 @@ public class VMultiSurface{
 					this.lod = 4;
 					multiSurfaceProperty = abstractBoundarySurface.getLod4MultiSurface();				
 					this.organize(multiSurfaceProperty);
+				}
+				
+				if(abstractBoundarySurface.isSetOpening()){
+					listOpeningProperty = abstractBoundarySurface.getOpening();
+					for (OpeningProperty openingProperty : listOpeningProperty ){
+						AbstractOpening abstractOpening = openingProperty.getOpening();
+						if (abstractOpening.isSetLod3MultiSurface()){
+							this.lod = 3;
+							multiSurfaceProperty = abstractOpening.getLod3MultiSurface();				
+							this.organize(multiSurfaceProperty);
+						}
+						if (abstractOpening.isSetLod4MultiSurface()){
+							this.lod = 4;
+							multiSurfaceProperty = abstractOpening.getLod4MultiSurface();				
+							this.organize(multiSurfaceProperty);
+						}
+					}
 				}
 			//}
 			wrapup = count == content - 1;

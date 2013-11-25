@@ -22,18 +22,16 @@ import xml.etree.ElementTree as MyXML
 # INFILE = '/Users/hugo/Dropbox/data/citygml/DenHaag11Building1.xml'
 
 dErrors = {
-          100: 'DUPLICATE_POINTS',
+          100: 'REPEATED_POINTS',
           110: 'RING_NOT_CLOSED',
-
-          200: 'INNER_RING_WRONG_ORIENTATION',
+		  120: 'RING_SELF_INTERSECT',
+		  
+          200: 'SELF_INTERSECTION',
           210: 'NON_PLANAR_SURFACE',
-          211: 'DEGENERATE_SURFACE',
-          220: 'SURFACE_PROJECTION_INVALID',
-          221: 'INNER_RING_INTERSECTS_OUTER',
-          222: 'INNER_RING_OUTSIDE_OUTER',
-          223: 'INNER_OUTER_RINGS_INTERSECT',
-          224: 'INTERIOR_OF_RING_NOT_CONNECTED',
-          230: 'NON_SIMPLE_SURFACE',
+          220: 'INTERIOR_DISCONNECTED',
+          230: 'HOLE_OUTSIDE',
+		  240: 'HOLES_ARE_NESTED',
+		  250: 'ORIENTATION_RINGS_SAME',
 
           300: 'NOT_VALID_2_MANIFOLD',
           301: 'SURFACE_NOT_CLOSED',
@@ -48,36 +46,45 @@ dErrors = {
           410: 'SHELL_INTERIOR_INTERSECT',
           420: 'INNER_SHELL_OUTSIDE_OUTER',
           430: 'INTERIOR_OF_SHELL_NOT_CONNECTED',
+		  
+		  901: 'INVALID_INPUT_FILE',
+		  999: 'UNKNOWN_ERRORS',
           }
 
 # Terrain.clr 255 colorbaar
 dErrors_colors = {
-          100: '200 215 133',
-          110: '171 217 177',
+          100: '255 255 0',
+          110: '255 255 0',
+		  120: '255 255 0',
+		  
+          200: '0 0 255',
+          210: '0 0 255',
+          #211: 0 0 255'
+          220: '0 0 255',
+          #221: 0 0 255',
+          #222: 0 0 255',
+          #223: 0 0 255',
+          #224: 0 0 255',
+          230: '0 0 255',
+		  240: '0 0 255',
+		  250: '0 0 255',
 
-          200: '124 196 120',
-          210: '117 193 120',
-          211: '255 0 0',
-          220: '219 208  78',
-          221: '241 207  14',
-          222: '242 167   0',
-          223: '192 159  13',
-          224: '211 192 112',
-          230: '0 255 0',
+          300: '255 0 0',
+          301: '255 0 0',
+          302: '255 0 0',
+          303: '255 0 0',
+          304: '255 0 0',
+          305: '255 0 0',
+          306: '255 0 0',
+          310: '255 0 0',
 
-          300: '175 204 166',
-          301: '240 219 161',
-          302: '252 236 192',
-          303: '248 250 234',
-          304: '229 254 250',
-          305: '219 255 253',
-          306: '214 251 252',
-          310: '0 0 255',
-
-          400: '115 224 241',
-          410: '29 188 239',
-          420: '0 137 245',
-          430: '183 244 247', 
+          400: '0 255 0',
+          410: '0 255 0',
+          420: '0 255 0',
+          430: '0 255 0', 
+		  
+		  901: '0 0 0',
+		  999: '0 0 0',
           }
 
 class TkFileDialogExample(Tkinter.Frame):
@@ -111,7 +118,7 @@ class TkFileDialogExample(Tkinter.Frame):
 3D VALIDATOR FOR CITYGML MODELS
 
 -Version-
-    V1.0.2beta
+    V1.1.0beta
 
 -Description-
     This is a tool for validating geometry of CityGML models.
@@ -124,32 +131,33 @@ class TkFileDialogExample(Tkinter.Frame):
   repair_.xml 
     describes the validition results of solids in the model.
     The error codes and their semantics are:
-    100: 'DUPLICATE_POINTS',
-    110: 'RING_NOT_CLOSED',
+	  100: 'REPEATED_POINTS',
+	  110: 'RING_NOT_CLOSED',
+	  120: 'RING_SELF_INTERSECT'
+	  
+	  200: 'SELF_INTERSECTION',
+	  210: 'NON_PLANAR_SURFACE',
+	  220: 'INTERIOR_DISCONNECTED',
+	  230: 'HOLE_OUTSIDE',
+	  240: 'HOLES_ARE_NESTED',
+	  250: 'ORIENTATION_RINGS_SAME',
 
-    200: 'INNER_RING_WRONG_ORIENTATION',
-    210: 'NON_PLANAR_SURFACE',
-    211: 'DEGENERATE_SURFACE',
-    220: 'SURFACE_PROJECTION_INVALID',
-    221: 'INNER_RING_INTERSECTS_OUTER',
-    222: 'INNER_RING_OUTSIDE_OUTER',
-    223: 'INNER_OUTER_RINGS_INTERSECT',
-    224: 'INTERIOR_OF_RING_NOT_CONNECTED',
-    230: 'NON_SIMPLE_SURFACE',
+	  300: 'NOT_VALID_2_MANIFOLD',
+	  301: 'SURFACE_NOT_CLOSED',
+	  302: 'DANGLING_FACES',
+	  303: 'FACE_ORIENTATION_INCORRECT_EDGE_USAGE',
+	  304: 'FREE_FACES',
+	  305: 'SURFACE_SELF_INTERSECTS',
+	  306: 'VERTICES_NOT_USED',
+	  310: 'SURFACE_NORMALS_BAD_ORIENTATION',
 
-    300: 'NOT_VALID_2_MANIFOLD',
-    301: 'SURFACE_NOT_CLOSED',
-    302: 'DANGLING_FACES',
-    303: 'FACE_ORIENTATION_INCORRECT_EDGE_USAGE',
-    304: 'FREE_FACES',
-    305: 'SURFACE_SELF_INTERSECTS',
-    306: 'VERTICES_NOT_USED',
-    310: 'SURFACE_NORMALS_BAD_ORIENTATION',
-
-    400: 'SHELLS_FACE_ADJACENT',
-    410: 'SHELL_INTERIOR_INTERSECT',
-    420: 'INNER_SHELL_OUTSIDE_OUTER',
-    430: 'INTERIOR_OF_SHELL_NOT_CONNECTED',
+	  400: 'SHELLS_FACE_ADJACENT',
+	  410: 'SHELL_INTERIOR_INTERSECT',
+	  420: 'INNER_SHELL_OUTSIDE_OUTER',
+	  430: 'INTERIOR_OF_SHELL_NOT_CONNECTED',
+	  
+	  901: 'INVALID_INPUT_FILE',
+	  999: 'UNKNOWN_ERRORS',
 
   repair_shape_.xml 
     provides a visible results of errors found in the input model.
@@ -191,7 +199,6 @@ def dothework(filename):
         dFiles[f1] = [f]
       else:
         dFiles[f1].append(f)
- # val3dity =   '/Users/hugo/Library/Developer/Xcode/DerivedData/val3dity-btcvseqwbnkwbueknlulczqmjyqt/Build/Products/Debug/val3dity'
   #modifed to the right folder
   val3dpath = os.path.join(curr_filepath, r'3DValidation\3DValidation.exe')
   i = 0
@@ -268,7 +275,7 @@ def dothework(filename):
 
 # 6 Modify the orignal file and add materials dErrors_colors to each error
   if invalidsolids != 0:
-        print('Output Erroneous Map to ' + fREPORT)
+        print('Output Erroneous Map to ' + fREPORT_SHAPE)
 
   #copy original file to current folder
   shutil.copyfile(filename, fREPORT_SHAPE)
@@ -347,29 +354,27 @@ def dothework(filename):
                     #check wether the ID of face is valid
                     ReportFaceId = ValidatorMessage.find('face').text
                     if ReportFaceId == '-1':
-                        bNolocation = True
+                        #bNolocation = True
+                        #all the faces of the solid are assign a material
+                        strSolidID = Solid.find('id').text
+                        for building in ModelXMLRoot.iter('{http://www.opengis.net/citygml/building/1.0}Building'):
+                            if building.get('{http://www.opengis.net/gml}id') == strSolidID:
+                                for faces in building.iter('{http://www.opengis.net/gml}Polygon'):
+                                    MatTarget = MyXML.SubElement(ErrorMat, '{http://www.opengis.net/citygml/appearance/1.0}target')
+                                    MatTarget.text = ('#' + faces.get('{http://www.opengis.net/gml}id'))
+                                break
                     else:
                         ErrorFaceId = ('#') + ValidatorMessage.find('face').text
-                        #donot have to move because of the new theme
-                        ##remove the original targes of the input erroneous faces
-                        #for target in ModelXMLRoot.findall('.//{http://www.opengis.net/citygml/appearance/1.0}target'):
-                        #    if target.text == ErrorFaceId:
-                        #        #how to remove(target)?
-                        #        target.text = ('')
-                        #    if target.get('uri') == ErrorFaceId:
-                        #        #how to remove(target)?
-                        #        target.set('uri', '')
-                  
                         #target to the erroneous faces
                         MatTarget = MyXML.SubElement(ErrorMat, '{http://www.opengis.net/citygml/appearance/1.0}target')
                         MatTarget.text = (ErrorFaceId)
 
             #if an error is unlocatable, the solid will be assign a material      
-            if bNolocation:
+            #if bNolocation:
                 #if face are not reported, assign the material to the solid (works?)
-                MatTarget = MyXML.SubElement(ErrorMat, '{http://www.opengis.net/citygml/appearance/1.0}target')
-                MatTarget.set('targetType', 'solid')
-                MatTarget.text = ('#' + Solid.find('id').text)
+                #MatTarget = MyXML.SubElement(ErrorMat, '{http://www.opengis.net/citygml/appearance/1.0}target')
+                #MatTarget.set('targetType', 'solid')
+                #MatTarget.text = ('#' + Solid.find('id').text)
 
 
   ModelXML.write(fREPORT_SHAPE,xml_declaration=True, method = 'xml')
@@ -384,7 +389,7 @@ if __name__ == '__main__':
     sys.exit()
   if sys.argv[1] == '-gui':
     root = Tkinter.Tk()
-    root.wm_title("val3dity -- validation of 3D solids v1.0.2beta")
+    root.wm_title("val3dity -- validation of 3D solids v1.1.0beta")
     root.geometry('400x100')
     TkFileDialogExample(root).pack()#, width=200, height=100).pack()
     root.mainloop()

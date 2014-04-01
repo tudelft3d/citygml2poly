@@ -28,21 +28,12 @@ dErrors = {
           430: 'INTERIOR_OF_SHELL_NOT_CONNECTED',
           }
 
-val3dity =  '/Users/hugo/Library/Developer/Xcode/DerivedData/val3dity-btcvseqwbnkwbueknlulczqmjyqt/Build/Products/Debug/val3dity'  
+val3dity =  '/Users/hugo/projects/val3dity/val3dity'
 
-# os.chdir('/Users/hugo/projects/citygml2poly/tmp_dh/')
-os.chdir('/Users/hugo/Dropbox/data/validation/IMGeo-test/LOD2/')
-
-# for f in os.listdir('.'):
-#   if f[-4:] == 'poly':
-#     print "-"*20
-#     print f
-#     cmd = val3dity + " -withids -xml " +  f
-#     os.system(cmd)
-#     print "-"*20
+os.chdir('/Users/hugo/data/val3dity/Munchen/polys/')
 
 
-# 3. validate each building/shell
+# validate each building/shell
 dFiles = {}
 for f in os.listdir('.'):
   if f[-4:] == 'poly':
@@ -52,8 +43,6 @@ for f in os.listdir('.'):
       dFiles[f1] = [f]
     else:
       dFiles[f1].append(f)
-val3dity =   '/Users/hugo/Library/Developer/Xcode/DerivedData/val3dity-btcvseqwbnkwbueknlulczqmjyqt/Build/Products/Debug/val3dity'
-# val3dity = '/Users/hugo/project/val3dity/trunk/val3dity'
 i = 0
 print "Number of solids in file:", len(dFiles)
 invalidsolids = 0
@@ -110,10 +99,11 @@ totalxml.append('</ValidatorContext>')
 
 # print "\n", '-'*33, '\n '
 # print "\n".join(totalxml)
-fout = open('../report.xml', 'w')
+fout = open('report.xml', 'w')
 fout.write('\n'.join(totalxml))
 fout.close()
 print "Invalid solids: ", invalidsolids
 print "Errors present:"
 for each in exampleerrors:
   print each, dErrors[int(each)]
+  

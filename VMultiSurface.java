@@ -40,6 +40,7 @@ public class VMultiSurface{
 	private boolean wrapup = false; // noodmaatregel om te voorkomen dat voor elk surface een poly wordt gemaakt
 	private boolean boundedBy = false;
 	private boolean is_Semantics = false;
+	private boolean is_SolidBoundary = false;//the multisurface is the boundasry of a solid 
 	
 	public VMultiSurface(VUnicNodes unicNodes, int lod){
 		this.unicNodes = unicNodes;
@@ -52,6 +53,10 @@ public class VMultiSurface{
 	
 	public void SetID(String str){
 		this.multiSurfaceGmlId = str;
+	}
+	
+	public void SetIsSolidBoundary (boolean set){
+		is_SolidBoundary = set;
 	}
 	
 	public void organize(List<BoundarySurfaceProperty> listBoundarySurfaceProperty){
@@ -199,7 +204,14 @@ public class VMultiSurface{
 		//First line of poly file, but no alternative for compositSurfaceGmlId
 		String str = "# " + multiSurfaceGmlId + lineSeparator;
 		// Second line of poly indicates the origin of the shell data
-		str = str + "# " + GEOMETRY_INDICATOR + lineSeparator;
+		if (is_SolidBoundary)
+		{
+			str = str + "# " + "1" + lineSeparator;
+		}
+		else
+		{
+			str = str + "# " + GEOMETRY_INDICATOR + lineSeparator;
+		}
 		//# Part 1 - node list
 		str = str + unicNodes.getSize() + "  " + "3" + " " + "0" + " " + "0" + lineSeparator;
 		//# Node index, node ordinates

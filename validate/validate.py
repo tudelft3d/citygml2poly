@@ -294,7 +294,7 @@ def dothework(filename):
   ModelXMLRoot = ModelXML.getroot()
   ModelXMLRoot.set('xmlns', 'http://www.opengis.net/citygml/1.0')
 
-  #registrate the namespaces
+  #register the namespaces
   MyXML.register_namespace('app', 'http://www.opengis.net/citygml/appearance/1.0')
   MyXML.register_namespace('bldg', 'http://www.opengis.net/citygml/building/1.0')
   MyXML.register_namespace('gen', 'http://www.opengis.net/citygml/generics/1.0')

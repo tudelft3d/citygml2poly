@@ -54,17 +54,23 @@ public class VConstruct<BuildingOrBuildingPart extends AbstractBuilding>{
 	 * MultiSurface could have their own geometric representation.
 	 */
 	public void organize(){
-		// boundedby has a higher priority because of the semantics
 		String BuildingId = object.getId();
-		if (object.isSetBoundedBySurface() /*&&
-				!(object.isSetLod4Solid() || object.isSetLod4MultiSurface())*/ ){
-			multiSurface = new VMultiSurface(unicNodes, -1);
-			multiSurface.SetIsSemantics(is_Semantics);
-			multiSurface.SetID(BuildingId);
-			multiSurface.organize(object.getBoundedBySurface());
-			shellDataStore.store(multiSurface.getShellDataArray());
-		}
-		else if(object.isSetLod1MultiSurface()){
+		//BuildingParts
+		if(object.isSetConsistsOfBuildingPart()){
+			for (BuildingPartProperty buildingPartProperty : object.getConsistsOfBuildingPart()){
+				ArrayList<String[]> keepShellDataArrays = shellDataArrays;
+				VShellDataStore keepShellDataStore = shellDataStore;
+				BuildingPart buildingPart = buildingPartProperty.getBuildingPart();
+				VConstruct<BuildingPart> construct = new VConstruct<BuildingPart>();
+				construct.SetIsSemantics(is_Semantics);
+				construct.store(buildingPart);
+				construct.setShellDataArrays(keepShellDataArrays);
+				construct.setShellDataStore(keepShellDataStore);
+				construct.organize();
+			}
+		}	
+		//LoD1
+		if(object.isSetLod1MultiSurface()){
 			lod = 1;
 			multiSurface = new VMultiSurface(unicNodes, lod);
 			multiSurface.SetIsSemantics(is_Semantics);
@@ -79,6 +85,18 @@ public class VConstruct<BuildingOrBuildingPart extends AbstractBuilding>{
 			solid.organize();
 			shellDataStore.store(solid.getShellDataArray());
 		}		
+		//LoD2
+		if (object.isSetBoundedBySurface() &&
+				(object.isSetLod2Solid() || object.isSetLod2MultiSurface())){
+			lod = 2;
+			multiSurface = new VMultiSurface(unicNodes, lod);
+			multiSurface.SetIsSemantics(is_Semantics);
+			multiSurface.SetID(BuildingId);
+			if(object.isSetLod2Solid())
+				multiSurface.SetIsSolidBoundary(true);
+			multiSurface.organize(object.getBoundedBySurface());
+			shellDataStore.store(multiSurface.getShellDataArray());
+		}
 		else if(object.isSetLod2MultiSurface()){
 			lod = 2;
 			multiSurface = new VMultiSurface(unicNodes, lod);
@@ -94,12 +112,19 @@ public class VConstruct<BuildingOrBuildingPart extends AbstractBuilding>{
 			solid.organize();
 			shellDataStore.store(solid.getShellDataArray());
 		}
-		/*else if (object.isSetBoundedBySurface() &&
-				!(object.isSetLod2Solid() || object.isSetLod2MultiSurface() ) ){
-			multiSurface = new VMultiSurface(unicNodes, 2);
+		
+		//LoD3
+		if (object.isSetBoundedBySurface() &&
+				(object.isSetLod3Solid() || object.isSetLod3MultiSurface() ) ){
+			lod = 3;
+			multiSurface = new VMultiSurface(unicNodes, lod);
+			multiSurface.SetIsSemantics(is_Semantics);
+			multiSurface.SetID(BuildingId);
+			if(object.isSetLod3Solid())
+				multiSurface.SetIsSolidBoundary(true);
 			multiSurface.organize(object.getBoundedBySurface());
 			shellDataStore.store(multiSurface.getShellDataArray());
-		}*/
+		}
 		else if(object.isSetLod3MultiSurface()){
 			lod = 3;
 			multiSurface = new VMultiSurface(unicNodes, lod);
@@ -115,12 +140,19 @@ public class VConstruct<BuildingOrBuildingPart extends AbstractBuilding>{
 			solid.organize();
 			shellDataStore.store(solid.getShellDataArray());
 		}
-		/*else if (object.isSetBoundedBySurface() &&
-				!(object.isSetLod3Solid() || object.isSetLod3MultiSurface() ) ){
-			multiSurface = new VMultiSurface(unicNodes, 3);
+		
+		//LoD4
+		if (object.isSetBoundedBySurface() &&
+				(object.isSetLod4Solid() || object.isSetLod4MultiSurface())){
+			lod = 4;
+			multiSurface = new VMultiSurface(unicNodes, lod);
+			multiSurface.SetIsSemantics(is_Semantics);
+			multiSurface.SetID(BuildingId);
+			if(object.isSetLod4Solid())
+				multiSurface.SetIsSolidBoundary(true);
 			multiSurface.organize(object.getBoundedBySurface());
 			shellDataStore.store(multiSurface.getShellDataArray());
-		}*/
+		}
 		else if(object.isSetLod4MultiSurface()){
 			lod = 4;
 			multiSurface = new VMultiSurface(unicNodes, lod);
@@ -136,18 +168,5 @@ public class VConstruct<BuildingOrBuildingPart extends AbstractBuilding>{
 			solid.organize();
 			shellDataStore.store(solid.getShellDataArray());
 		}
-		else if(object.isSetConsistsOfBuildingPart()){
-			for (BuildingPartProperty buildingPartProperty : object.getConsistsOfBuildingPart()){
-				ArrayList<String[]> keepShellDataArrays = shellDataArrays;
-				VShellDataStore keepShellDataStore = shellDataStore;
-				BuildingPart buildingPart = buildingPartProperty.getBuildingPart();
-				VConstruct<BuildingPart> construct = new VConstruct<BuildingPart>();
-				construct.SetIsSemantics(is_Semantics);
-				construct.store(buildingPart);
-				construct.setShellDataArrays(keepShellDataArrays);
-				construct.setShellDataStore(keepShellDataStore);
-				construct.organize();
-			}
-		}	
 	}
 }

@@ -9,29 +9,28 @@ from StringIO import StringIO
 val3dityexe =  '/Users/hugo/projects/val3dity/val3dity'
 
 dErrors = {
-          100: 'DUPLICATE_POINTS',
-          110: 'RING_NOT_CLOSED',
-          200: 'INNER_RING_WRONG_ORIENTATION',
-          210: 'NON_PLANAR_SURFACE',
-          220: 'SURFACE_PROJECTION_INVALID',
-          221: 'INNER_RING_INTERSECTS_OUTER',
-          222: 'INNER_RING_OUTSIDE_OUTER',
-          223: 'INNER_OUTER_RINGS_INTERSECT',
-          224: 'INTERIOR_OF_RING_NOT_CONNECTED',
-          300: 'NOT_VALID_2_MANIFOLD',
-          301: 'SURFACE_NOT_CLOSED',
-          302: 'DANGLING_FACES',
-          303: 'FACE_ORIENTATION_INCORRECT_EDGE_USAGE',
-          304: 'FREE_FACES',
-          305: 'SURFACE_SELF_INTERSECTS',
-          306: 'VERTICES_NOT_USED',
-          310: 'SURFACE_NORMALS_BAD_ORIENTATION',
-          400: 'SHELLS_FACE_ADJACENT',
-          410: 'SHELL_INTERIOR_INTERSECT',
-          420: 'INNER_SHELL_OUTSIDE_OUTER',
-          430: 'INTERIOR_OF_SHELL_NOT_CONNECTED',
-          }
-
+  100: 'REPEATED_POINTS',
+  110: 'RING_NOT_CLOSED',   
+  120: 'RING_SELF_INTERSECT',
+  200: 'SELF_INTERSECTION',  
+  210: 'NON_PLANAR_SURFACE',                     
+  220: 'INTERIOR_DISCONNECTED',
+  230: 'HOLE_OUTSIDE',
+  240: 'HOLES_ARE_NESTED',                      
+  250: 'ORIENTATION_RINGS_SAME',
+  300: 'NOT_VALID_2_MANIFOLD',
+  301: 'SURFACE_NOT_CLOSED',                     
+  302: 'DANGLING_FACES',                         
+  303: 'FACE_ORIENTATION_INCORRECT_EDGE_USAGE',  
+  304: 'FREE_FACES',                             
+  305: 'SURFACE_SELF_INTERSECTS',                
+  310: 'VERTICES_NOT_USED',                      
+  320: 'SURFACE_NORMALS_WRONG_ORIENTATION',      
+  400: 'SHELLS_FACE_ADJACENT',                   
+  410: 'SHELL_INTERIOR_INTERSECT',               
+  420: 'INNER_SHELL_OUTSIDE_OUTER',              
+  430: 'INTERIOR_OF_SHELL_NOT_CONNECTED', 
+}
 
 
 def main():
@@ -119,7 +118,7 @@ def validate_polys(fin):
 
   totalxml = []
   totalxml.append('<ValidatorContext>')
-  totalxml.append('\t<inputFile>' + 'filename' + '</inputFile>')
+  totalxml.append('\t<inputFile>' + fin.name + '</inputFile>')
   totalxml.append("\n".join(xmlsolids))
   totalxml.append('</ValidatorContext>')
   s = fin.name

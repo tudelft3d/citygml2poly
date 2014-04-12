@@ -20,7 +20,7 @@ public class VShell {
 	private final String NO_ID_INDICATOR = "-1";
 	private final int GEOMETRY_INDICATOR = 1; // for Solid geometry
 	private ArrayList<VFacet> facets = new ArrayList<VFacet>();
-	private VUnicNodes unicNodes;
+	private VUnicNodes unicNodes = new VUnicNodes();//140412
 	private VFacet facet;
 	private VPolygon vpolygon;
 	private VReferedElement element;
@@ -31,6 +31,11 @@ public class VShell {
 	
 	public VShell(VUnicNodes unicNodes, int lod){
 		this.unicNodes = unicNodes;
+		this.lod = lod;
+	}
+	
+	//140412
+	public VShell(int lod){
 		this.lod = lod;
 	}
 	

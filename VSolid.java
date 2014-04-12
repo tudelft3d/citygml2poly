@@ -26,6 +26,12 @@ public class VSolid{
 		this.lod = lod;
 	}
 	
+	//140412
+	public VSolid(SolidProperty solidProperty, int lod){
+		this.solidProperty = solidProperty;
+		this.lod = lod;
+	}
+	
 	public void SetId(String str){
 		this.solidGmlId = str;
 	}
@@ -42,7 +48,8 @@ public class VSolid{
 		SurfaceProperty exteriorSurfaceProperty = solid.getExterior(); 
 		String solidId = solidGmlId + EXTERIOR_INDICATOR;
 		shellData[0] = solidId; //first element of shellData is Id for file name
-		shell = new VShell(unicNodes, lod);
+		//shell = new VShell(unicNodes, lod);//140412
+		shell = new VShell(lod);
 		shell.organize(exteriorSurfaceProperty);
 		shellData[1] = shell.toString();
 		shellDataArray.add(shellData);			
@@ -53,7 +60,8 @@ public class VSolid{
 			shellData = new String[2];//otherwise the shellDataArray will be flushed
 			solidId = solidGmlId + "." + innerShellNr; //sequential number >0 as INTERIOR_INDICATOR
 			shellData[0] = solidId;
-			shell = new VShell(unicNodes, lod);
+			//shell = new VShell(unicNodes, lod);//140412
+			shell = new VShell(lod);
 			shell.organize(interiorSurfaceProperty);
 			shellData[1] = shell.toString();
 			shellDataArray.add(shellData);

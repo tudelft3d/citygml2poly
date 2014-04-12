@@ -15,7 +15,10 @@ import org.citygml4j.model.gml.geometry.primitives.PosOrPointPropertyOrPointRep;
 import org.citygml4j.model.gml.geometry.primitives.SurfaceProperty;
 import org.citygml4j.model.citygml.building.OpeningProperty;
 import org.citygml4j.model.citygml.building.AbstractOpening;
-
+import org.citygml4j.model.gml.geometry.complexes.CompositeSurface;
+import org.citygml4j.model.gml.geometry.complexes.CompositeSurfaceProperty;
+import org.citygml4j.model.gml.geometry.primitives.AbstractSurface;
+import org.citygml4j.model.gml.GMLClass; 
 /**
  * This class deals with MultiSurface valued geometry property,
  * either directly from Building or from BoundedBySurface
@@ -27,7 +30,7 @@ public class VMultiSurface{
 	private static final String NO_ID_INDICATOR = "-1";
 	private static final String GEOMETRY_INDICATOR = "0"; // for MultiSurface geometry
 	private ArrayList<VFacet> facets = new ArrayList<VFacet>();
-	private VUnicNodes unicNodes;
+	private VUnicNodes unicNodes = new VUnicNodes();//140412;
 	private VFacet facet;
 	private VPolygon vpolygon;
 	private VReferedElement element;
@@ -44,6 +47,11 @@ public class VMultiSurface{
 	
 	public VMultiSurface(VUnicNodes unicNodes, int lod){
 		this.unicNodes = unicNodes;
+		this.lod = lod;
+	}
+	
+	//140412
+	public VMultiSurface(int lod){
 		this.lod = lod;
 	}
 	
@@ -114,6 +122,64 @@ public class VMultiSurface{
 		}
 	}
 			
+	public void organize(SurfaceProperty polygonSurfaceProperty){
+		Polygon polygon = (Polygon)polygonSurfaceProperty.getSurface();
+		if (polygon == null){ 
+			polygonId  = (polygonSurfaceProperty.getHref()).substring(1);
+			element = new VReferedElement(polygonSurfaceProperty, lod);
+			element.search(polygonId);
+			polygon = element.getPolygon();
+		}
+		else{
+			polygonId = polygon.getId();
+			if (polygonId == null){
+				polygonId = NO_ID_INDICATOR;
+			}
+		}
+		facet = new VFacet(polygonId, polygonCode);
+		//exterior polygon
+		AbstractRingProperty abstractRingProperty = polygon.getExterior();
+		LinearRing linearRing = (LinearRing)abstractRingProperty.getRing();
+		
+		List<PosOrPointPropertyOrPointRep> pppList = null;
+		if(linearRing.isSetPosOrPointPropertyOrPointRep()){
+			pppList = linearRing.getPosOrPointPropertyOrPointRep();
+			vpolygon = new VPolygon(unicNodes, pppList);
+			facet.addPolygon(vpolygon);
+		}
+		
+		DirectPositionList posList = null;
+		if(linearRing.isSetPosList()){
+			posList = linearRing.getPosList();
+			vpolygon = new VPolygon(unicNodes, posList);
+			facet.addPolygon(vpolygon);
+			vpolygon.clearNodes();
+		}
+		//Interior polygons
+		List<AbstractRingProperty> abstractIntRingProperties = polygon.getInterior();
+		for (AbstractRingProperty abstractIntRingProperty : abstractIntRingProperties){
+			LinearRing linearIntRing = (LinearRing)abstractIntRingProperty.getRing();
+			List<PosOrPointPropertyOrPointRep> pppIntList = null;
+			if(linearIntRing.isSetPosOrPointPropertyOrPointRep()){
+				pppIntList = linearIntRing.getPosOrPointPropertyOrPointRep();
+				vpolygon = new VPolygon(unicNodes, pppIntList);
+				facet.addPolygon(vpolygon);
+				facet.addHolePoint(vpolygon.getHolePoint());
+				vpolygon.clearNodes();
+			}
+			DirectPositionList posIntList = null;
+			if(linearIntRing.isSetPosList()){
+				posIntList = linearIntRing.getPosList();
+				vpolygon = new VPolygon(unicNodes, posIntList);
+				facet.addPolygon(vpolygon);
+				facet.addHolePoint(vpolygon.getHolePoint());
+				vpolygon.clearNodes();
+			}
+		}
+		
+		facets.add(facet);
+	}
+	
 	public void organize(MultiSurfaceProperty multiSurfaceProperty){
 		if(multiSurfaceProperty.isSetMultiSurface()){
 			MultiSurface multiSurface = (MultiSurface)multiSurfaceProperty.getObject();
@@ -126,62 +192,20 @@ public class VMultiSurface{
 		}
 		MultiSurface multiSurface = multiSurfaceProperty.getMultiSurface();
 		List<SurfaceProperty> surfaceMember = multiSurface.getSurfaceMember();
-		for (SurfaceProperty surfaceMemberElement : surfaceMember){ 	
-			Polygon polygon = (Polygon)surfaceMemberElement.getSurface();
-			if (polygon == null){ 
-				polygonId  = (surfaceMemberElement.getHref()).substring(1);
-				element = new VReferedElement(surfaceMemberElement, lod);
-				element.search(polygonId);
-				polygon = element.getPolygon();
-			}
-			else{
-				polygonId = polygon.getId();
-				if (polygonId == null){
-					polygonId = NO_ID_INDICATOR;
+		for (SurfaceProperty surfaceMemberElement : surfaceMember){ 
+			GMLClass Surface_type = surfaceMemberElement.getGeometry().getGMLClass();
+			if (Surface_type.name() == "COMPOSITE_SURFACE")
+			{
+				CompositeSurface subSurface =  (CompositeSurface)surfaceMemberElement.getSurface();
+				List<SurfaceProperty> subSurfaceMember = subSurface.getSurfaceMember();
+				for (SurfaceProperty subSurfaceMemberElement : subSurfaceMember){ 
+					this.organize(subSurfaceMemberElement);
 				}
 			}
-			facet = new VFacet(polygonId, polygonCode);
-			//exterior polygon
-			AbstractRingProperty abstractRingProperty = polygon.getExterior();
-			LinearRing linearRing = (LinearRing)abstractRingProperty.getRing();
-			
-			List<PosOrPointPropertyOrPointRep> pppList = null;
-			if(linearRing.isSetPosOrPointPropertyOrPointRep()){
-				pppList = linearRing.getPosOrPointPropertyOrPointRep();
-				vpolygon = new VPolygon(unicNodes, pppList);
-				facet.addPolygon(vpolygon);
+			else
+			{
+				this.organize(surfaceMemberElement);
 			}
-			
-			DirectPositionList posList = null;
-			if(linearRing.isSetPosList()){
-				posList = linearRing.getPosList();
-				vpolygon = new VPolygon(unicNodes, posList);
-				facet.addPolygon(vpolygon);
-				vpolygon.clearNodes();
-			}
-			//Interior polygons
-			List<AbstractRingProperty> abstractIntRingProperties = polygon.getInterior();
-			for (AbstractRingProperty abstractIntRingProperty : abstractIntRingProperties){
-				LinearRing linearIntRing = (LinearRing)abstractIntRingProperty.getRing();
-				List<PosOrPointPropertyOrPointRep> pppIntList = null;
-				if(linearIntRing.isSetPosOrPointPropertyOrPointRep()){
-					pppIntList = linearIntRing.getPosOrPointPropertyOrPointRep();
-					vpolygon = new VPolygon(unicNodes, pppIntList);
-					facet.addPolygon(vpolygon);
-					facet.addHolePoint(vpolygon.getHolePoint());
-					vpolygon.clearNodes();
-				}
-				DirectPositionList posIntList = null;
-				if(linearIntRing.isSetPosList()){
-					posIntList = linearIntRing.getPosList();
-					vpolygon = new VPolygon(unicNodes, posIntList);
-					facet.addPolygon(vpolygon);
-					facet.addHolePoint(vpolygon.getHolePoint());
-					vpolygon.clearNodes();
-				}
-			}
-			
-			facets.add(facet);
 		}
 		if (wrapup || !boundedBy){
 			String multiSurfaceId = multiSurfaceGmlId + EXTERIOR_INDICATOR;

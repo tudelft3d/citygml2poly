@@ -14,6 +14,7 @@ public class VSolid{
 	private static final String NO_ID_INDICATOR = "-1";
 	private SolidProperty solidProperty;
 	private VShell shell;
+	private VShell inner_shell;//added for union exterior and inner shells
 	private String[] shellData = new String[2];
 	private ArrayList<String[]> shellDataArray = new ArrayList<String[]>();
 	private VUnicNodes unicNodes;
@@ -44,20 +45,30 @@ public class VSolid{
 		shellData[0] = solidId; //first element of shellData is Id for file name
 		shell = new VShell(unicNodes, lod);
 		shell.organize(exteriorSurfaceProperty);
-		shellData[1] = shell.toString();
-		shellDataArray.add(shellData);			
+		//modified to merge exterior and inner shells
+		//shellData[1] = shell.toString();
+		//shellDataArray.add(shellData);			
 		// now the inner shells
-		int innerShellNr = 1;
+		//int innerShellNr = 1;
 		List<SurfaceProperty> surfacePropertyList = solid.getInterior();
 		for (SurfaceProperty interiorSurfaceProperty : surfacePropertyList){
-			solidId = solidGmlId + "." + innerShellNr; //sequential number >0 as INTERIOR_INDICATOR
-			shellData[0] = solidId;
-			shell = new VShell(unicNodes, lod);
-			shell.organize(interiorSurfaceProperty);
-			shellData[1] = shell.toString();
-			shellDataArray.add(shellData);
-			innerShellNr++;
+			//modified to merge exterior and inner shells
+			inner_shell = new VShell(unicNodes, lod);
+			inner_shell.organize(interiorSurfaceProperty);
+			shell.add_facets(inner_shell.get_facets());
+			//solidId = solidGmlId + "." + innerShellNr; //sequential number >0 as INTERIOR_INDICATOR
+			//shellData[0] = solidId;
+			//shell = new VShell(unicNodes, lod);
+			//shell.organize(interiorSurfaceProperty);
+			//
+			//shellData[1] = shell.toString();
+			//shellDataArray.add(shellData);
+			//
+			//innerShellNr++;
 		}
+		//modified to merge exterior and inner shells
+		shellData[1] = shell.toString();
+		shellDataArray.add(shellData);
 	}
 	
 	public ArrayList<String[]> getShellDataArray(){

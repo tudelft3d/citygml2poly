@@ -45,6 +45,7 @@ public class VConstruct<BuildingOrBuildingPart extends AbstractBuilding>{
 	/**
 	 * For conditions that various geometries may occur at the various 
 	 * LODs see CityGML Encoding standard (OGC 08-007r1 page 61).
+	 * (Also in OGC 12-019 page 78)
 	 * Only one of lod1MultiSurface and lod1Solid properties must be used.
 	 * If building isSetBoundedBySurface than on that level MultiSurface 
 	 * will appear in LOD2, LOD3 and/or LOD4.

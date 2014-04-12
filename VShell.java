@@ -138,6 +138,18 @@ public class VShell {
 		str = str + "0" + lineSeparator;
 	return str;
 	}
+	/*
+	 * union all the polygons of a solid with inner shells, the vertices are stored uniquely in unicNodes)
+	 */
+	public void add_facets(ArrayList<VFacet> input_facets){
+		for (VFacet facet : input_facets){
+			facets.add(facet);
+		}
+	}
+	//export all the facets of this shell
+	public ArrayList<VFacet> get_facets(){
+		return facets;
+	}
 }
 
 
